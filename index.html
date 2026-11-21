@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODEX | منصة إصدار الشهادات الاحترافية</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- مكتبات تحويل الشهادة إلى PDF عالي الجودة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- خطوط عربية وإنجليزية فاخرة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* إعدادات الخطوط */
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+        .font-amiri { font-family: 'Amiri', serif; }
+        .font-ruqaa { font-family: 'Aref Ruqaa', serif; }
+        .font-en { font-family: 'Playfair Display', 'Cairo', serif; }
+
+        /* أبعاد الشهادة الثابتة A4 بالعرض (1120px x 792px) لضمان دقة التصدير وعدم التعلق */
+        .cert-canvas {
+            width: 1120px;
+            height: 792px;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        /* منع تباعد الحروف الذي يسبب تقطع الحروف العربية عند التصدير */
+        .cert-canvas * {
+            letter-spacing: 0 !important;
+        }
+
+        /* حاوية المعاينة المتجاوبة */
+        .preview-stage {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+
+        /* ======================================================
+           تصاميم احترافية فخمة لكل مادة (إطارات حقيقية بدون براويز زوايا)
+           ====================================================== */
+
+        /* 1. اللغة العربية: عاجي مذهب وعنابي ملكي */
+        .tpl-arabic {
+            background: linear-gradient(145deg, #fffdf7 0%, #f8efd9 55%, #efe0be 100%);
+            border: 12px solid #9a6712;
+            color: #271c12;
+        }
+        .tpl-arabic .inner-border { border: 2px solid #6b1d1d; }
+        .tpl-arabic .main-title { color: #8c5808; }
+        .tpl-arabic .sub-title { color: #6b1d1d; }
+        .tpl-arabic .subject-pill { background: #6b1d1d; color: #fce9b2; border: 2px solid #d4af37; }
+        .tpl-arabic .rule-line { background: #9a6712; }
+
+        /* 2. الرياضيات: أزرق ملكي هندسي وذهبي */
+        .tpl-math {
+            background: linear-gradient(145deg, #f8faff 0%, #eaf0fc 100%);
+            border: 12px solid #172554;
+            color: #0f172a;
+        }
+        .tpl-math .inner-border { border: 2px solid #1d4ed8; }
+        .tpl-math .main-title { color: #172554; }
+        .tpl-math .sub-title { color: #1d4ed8; }
+        .tpl-math .subject-pill { background: #172554; color: #fde047; border: 2px solid #eab308; }
+        .tpl-math .rule-line { background: #1d4ed8; }
+
+        /* 3. العلوم: زمردي عميق وفيروزي راقٍ */
+        .tpl-science {
+            background: linear-gradient(145deg, #f3fcf8 0%, #e1f5ec 100%);
+            border: 12px solid #064e3b;
+            color: #062e23;
+        }
+        .tpl-science .inner-border { border: 2px solid #059669; }
+        .tpl-science .main-title { color: #064e3b; }
+        .tpl-science .sub-title { color: #047857; }
+        .tpl-science .subject-pill { background: #064e3b; color: #a7f3d0; border: 2px solid #10b981; }
+        .tpl-science .rule-line { background: #059669; }
+
+        /* 4. English (إنجليزي بالكامل بدون أي عربي): كحلي وعنابي كلاسيكي */
+        .tpl-english {
+            background: linear-gradient(145deg, #fcfbf7 0%, #f1ece1 100%);
+            border: 12px solid #1e1b4b;
+            color: #1e293b;
+        }
+        .tpl-english .inner-border { border: 2px solid #881337; }
+        .tpl-english .main-title { color: #881337; }
+        .tpl-english .sub-title { color: #1e1b4b; }
+        .tpl-english .subject-pill { background: #1e1b4b; color: #fde68a; border: 2px solid #b45309; }
+        .tpl-english .rule-line { background: #881337; }
+
+        /* 5. اللغة الإنجليزية (بالعربي): أزرق داكن وذهبي */
+        .tpl-english-ar {
+            background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 12px solid #0f172a;
+            color: #0f172a;
+        }
+        .tpl-english-ar .inner-border { border: 2px solid #9f1239; }
+        .tpl-english-ar .main-title { color: #0f172a; }
+        .tpl-english-ar .sub-title { color: #9f1239; }
+        .tpl-english-ar .subject-pill { background: #0f172a; color: #fde68a; border: 2px solid #d97706; }
+        .tpl-english-ar .rule-line { background: #9f1239; }
+
+        /* 6. الحاسب والبرمجة: داكن احترافي بلمسات سيان */
+        .tpl-cs {
+            background: linear-gradient(145deg, #090d16 0%, #111827 100%);
+            border: 12px solid #0e7490;
+            color: #f1f5f9;
+        }
+        .tpl-cs .inner-border { border: 2px solid #22d3ee; }
+        .tpl-cs .main-title { color: #38bdf8; }
+        .tpl-cs .sub-title { color: #22d3ee; }
+        .tpl-cs .subject-pill { background: #164e63; color: #a5f3fc; border: 2px solid #22d3ee; }
+        .tpl-cs .rule-line { background: #22d3ee; }
+
+        /* 7. الدراسات الاجتماعية والتاريخ: برونزي تراثي دافئ */
+        .tpl-social {
+            background: linear-gradient(145deg, #fffaf3 0%, #f6e7d4 100%);
+            border: 12px solid #78350f;
+            color: #3b1806;
+        }
+        .tpl-social .inner-border { border: 2px solid #b45309; }
+        .tpl-social .main-title { color: #78350f; }
+        .tpl-social .sub-title { color: #b45309; }
+        .tpl-social .subject-pill { background: #78350f; color: #fef3c7; border: 2px solid #d97706; }
+        .tpl-social .rule-line { background: #b45309; }
+
+        /* شريط التمرير الخفيف */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-cairo min-h-screen flex flex-col">
+
+    <!-- شريط علوي أنيق وخفيف -->
+    <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2 sm:gap-3 sticky top-0 z-30">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1 rounded-xl shrink-0">
+                <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 100 100" fill="none">
+                    <path d="M72 22 A38 38 0 1 0 72 78 L60 66 A21 21 0 1 1 60 34 Z" fill="#0284c7"/>
+                    <path d="M44 30 L56 30 L66 44 L76 30 L88 30 L72 50 L88 70 L76 70 L66 56 L56 70 L44 70 L60 50 Z" fill="#06b6d4"/>
+                </svg>
+                <span class="font-black text-base sm:text-lg text-slate-900">CODEX</span>
+            </div>
+            <div class="truncate">
+                <h1 class="text-xs sm:text-base font-extrabold text-white truncate">استوديو الشهادات الاحترافي</h1>
+                <p class="hidden sm:block text-[11px] text-slate-400">سريع • لكل مادة شكل خاص • تصدير PDF مستقل لكل طالب</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-end">
+            <button type="button" id="btnExportOne" onclick="exportSinglePDF()"
+                class="flex-1 sm:flex-initial bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 text-[11px] sm:text-sm font-bold px-2.5 sm:px-3.5 py-2 rounded-xl transition cursor-pointer">
+                تحميل PDF الحالي
+            </button>
+            <button type="button" id="btnExportAll" onclick="exportAllPDFs()"
+                class="flex-1 sm:flex-initial bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl transition cursor-pointer shadow-md">
+                تصدير كل الطلاب PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- شريط التقدم عند تصدير عدة ملفات -->
+    <div id="exportStatusBar" class="hidden bg-cyan-950 border-b border-cyan-800 text-cyan-200 text-xs sm:text-sm font-bold py-2 px-4 text-center">
+        جاري تجهيز ملفات الـ PDF...
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="flex-1 flex flex-col lg:flex-row">
+
+        <!-- لوحة التحكم الجانبية -->
+        <aside class="w-full lg:w-[400px] bg-slate-900 border-b lg:border-b-0 lg:border-l border-slate-800 p-4 sm:p-5 lg:h-[calc(100vh-61px)] lg:overflow-y-auto flex-shrink-0 space-y-4">
+
+            <!-- 1. اختيار المادة -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5">
+                <div class="text-xs font-extrabold text-cyan-400 mb-2.5">١. اختر المادة الدراسية</div>
+                <div class="grid grid-cols-2 gap-2" id="subjectsGrid">
+                    <button type="button" data-key="arabic" onclick="setSubject('arabic')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-amber-500 bg-amber-500/15 text-amber-200 transition cursor-pointer">
+                        اللغة العربية
+                    </button>
+                    <button type="button" data-key="math" onclick="setSubject('math')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        الرياضيات
+                    </button>
+                    <button type="button" data-key="science" onclick="setSubject('science')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        العلوم
+                    </button>
+                    <button type="button" data-key="english" onclick="setSubject('english')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        English (إنجليزي بالكامل)
+                    </button>
+                    <button type="button" data-key="english_ar" onclick="setSubject('english_ar')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        اللغة الإنجليزية (بالعربي)
+                    </button>
+                    <button type="button" data-key="cs" onclick="setSubject('cs')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        الحاسب والبرمجة
+                    </button>
+                    <button type="button" data-key="social" onclick="setSubject('social')" class="subj-card col-span-2 text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
+                        الدراسات الاجتماعية والتاريخ
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. أسماء الطلاب تحت بعضهم (بدون أسماء تجريبية) -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-cyan-400">٢. قائمة الطلاب</span>
+                    <span id="studentCounter" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-bold">0 طالب</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="studentNameInput" placeholder="اكتب اسم الطالب..."
+                        onkeydown="if(event.key==='Enter'){ event.preventDefault(); addStudentItem(); }"
+                        class="flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <button type="button" onclick="addStudentItem()"
+                        class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition cursor-pointer">
+                        إضافة
+                    </button>
+                </div>
+
+                <!-- عرض الطلاب تحت بعض -->
+                <div id="studentsVerticalList" class="flex flex-col gap-1.5 max-h-40 overflow-y-auto"></div>
+            </div>
+
+            <!-- 3. الدرجة (علامة صح لإضافة دائرة وبها شرطة في المنتصف + جاب كام ومن كام) -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="toggleGradeCheck" onchange="onGradeToggle()"
+                        class="w-4 h-4 accent-cyan-500 rounded cursor-pointer">
+                    <span class="text-xs font-bold text-amber-300">إضافة الدرجة (دائرة وشرطة في النص)</span>
+                </label>
+
+                <div id="gradeFieldsWrap" class="hidden space-y-2.5 pt-1">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">الطالب جاب كام</label>
+                            <input type="text" id="studentEarnedInput" value="50" oninput="onStudentEarnedChange(this.value)"
+                                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-cyan-300 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">الدرجة من كام</label>
+                            <input type="text" id="studentMaxInput" value="50" oninput="syncCertificate()"
+                                class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-amber-300 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- خيار المراكز التلقائية (يعمل فقط عند تفعيل الدرجة) -->
+                    <div class="pt-2 border-t border-slate-800/80">
+                        <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                            <input type="checkbox" id="toggleRanksCheck" onchange="onRanksToggle()"
+                                class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                            <span class="text-xs font-bold text-emerald-300">حساب المراكز تلقائياً بالدرجات</span>
+                        </label>
+                        <p class="text-[10px] text-slate-500 mt-1">يرتب الطلاب تلقائياً من الأعلى درجة للأقل (مع مراعاة تساوي الدرجات)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. بيانات المدرسة والمدرس والتاريخ والسبب -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+                <div class="text-xs font-extrabold text-cyan-400">٣. بيانات الشهادة</div>
+
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">اسم المدرسة</label>
+                    <input type="text" id="schoolInput" value="مدرسة النور الحديثة" oninput="syncCertificate()"
+                        class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">سبب أخذ الشهادة</label>
+                    <textarea id="reasonInput" rows="2" oninput="syncCertificate()"
+                        class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">تقديراً لتفوقه المتميز وأدائه الرائع واجتهاده المستمر في مادة</textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">اسم المدرس</label>
+                        <input type="text" id="teacherInput" value="أ. خالد بن سعد" oninput="syncCertificate()"
+                            class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">التاريخ</label>
+                        <input type="text" id="dateInput" value="٢٢ نوفمبر ٢٠٢٦ م" oninput="syncCertificate()"
+                            class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- منطقة المعاينة الفورية -->
+        <main class="flex-1 bg-slate-950 p-4 sm:p-7 flex flex-col items-center">
+
+            <!-- شريط التنقل بين الطلاب -->
+            <div class="mb-4 flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-1.5 rounded-full text-xs">
+                <button type="button" onclick="stepStudent(-1)" class="text-slate-400 hover:text-cyan-400 px-1 cursor-pointer">▶</button>
+                <span class="text-slate-300 font-bold">المعاينة: <span id="activeStudentPreviewLabel" class="text-cyan-400">اسم الطالب</span></span>
+                <button type="button" onclick="stepStudent(1)" class="text-slate-400 hover:text-cyan-400 px-1 cursor-pointer">◀</button>
+            </div>
+
+            <!-- مرحلة التحجيم التلقائي -->
+            <div id="previewStage" class="preview-stage">
+
+                <!-- الشهادة الفخمة (1120x792) -->
+                <div id="certificateSheet" dir="rtl" class="cert-canvas tpl-arabic p-6 flex flex-col justify-between select-none">
+                    <div class="inner-border w-full h-full p-8 flex flex-col justify-between relative">
+
+                        <!-- دائرة الدرجة (دائرة وبها شرطة في المنتصف) -->
+                        <div id="gradeCircleBadge" class="hidden absolute top-7 left-7 w-24 h-24 rounded-full border-[3px] border-current flex flex-col items-center justify-center bg-white/50">
+                            <span id="circleEarnedVal" class="font-cairo font-black text-xl leading-none">50</span>
+                            <div class="w-14 h-[2.5px] bg-current my-1.5"></div>
+                            <span id="circleMaxVal" class="font-cairo font-black text-xl leading-none">50</span>
+                        </div>
+
+                        <!-- شارة المركز التلقائي (تظهر فقط عند تفعيل الدرجة والمراكز) -->
+                        <div id="rankBadgeBox" class="hidden subject-pill px-5 py-1 rounded-full mx-auto mb-1">
+                            <span id="rankBadgeText" class="font-cairo font-extrabold text-base">المركز الأول</span>
+                        </div>
+
+                        <!-- الرأس: اسم المدرسة + العنوان -->
+                        <div class="text-center pt-1">
+                            <div id="certSchoolName" class="font-amiri font-bold text-2xl mb-1.5">مدرسة النور الحديثة</div>
+                            <h1 id="certMainHeading" class="main-title font-ruqaa text-6xl leading-tight">شهادة تقدير وتفوق</h1>
+                            <p id="certSubHeading" class="sub-title font-amiri font-bold text-2xl mt-1">في مادة اللغة العربية وآدابها</p>
+                            <div class="rule-line w-64 h-[2px] mx-auto mt-3 opacity-50"></div>
+                        </div>
+
+                        <!-- المتن: اسم الطالب + السبب + المادة -->
+                        <div class="text-center my-auto px-10">
+                            <p id="certLeadText" class="font-amiri font-bold text-2xl opacity-85 mb-2">تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:</p>
+
+                            <div class="inline-block px-10 py-1.5 border-b-2 border-dashed border-current/35 my-1">
+                                <h2 id="certStudentName" class="cert-student font-ruqaa text-5xl leading-relaxed">اسم الطالب</h2>
+                            </div>
+
+                            <p id="certReasonText" class="font-amiri text-2xl max-w-3xl mx-auto mt-3 leading-relaxed">
+                                تقديراً لتفوقه المتميز وأدائه الرائع واجتهاده المستمر في مادة
+                            </p>
+
+                            <div class="subject-pill inline-block px-9 py-2 rounded-full mt-4">
+                                <span id="certSubjectPillText" class="font-cairo font-extrabold text-2xl">اللغة العربية</span>
+                            </div>
+                        </div>
+
+                        <!-- التذييل: المدرس + التاريخ + شعار CODEX صغير على جنب في الأسفل -->
+                        <div class="relative pt-2">
+                            <div class="flex items-end justify-between px-12">
+                                <div class="text-center">
+                                    <div id="certTeacherRole" class="sub-title font-amiri font-bold text-lg">مُدرّس المادة</div>
+                                    <div id="certTeacherVal" class="font-ruqaa text-2xl mt-1">أ. خالد بن سعد</div>
+                                    <div class="rule-line w-48 h-[1.5px] opacity-40 mt-1.5"></div>
+                                </div>
+
+                                <div class="text-center">
+                                    <div id="certDateRole" class="sub-title font-amiri font-bold text-lg">التاريخ</div>
+                                    <div id="certDateVal" class="font-amiri font-bold text-xl mt-1">٢٢ نوفمبر ٢٠٢٦ م</div>
+                                    <div class="rule-line w-48 h-[1.5px] opacity-40 mt-1.5"></div>
+                                </div>
+                            </div>
+
+                            <!-- شعار CODEX صغير جداً على جنب في الأسفل -->
+                            <div class="absolute bottom-0 left-1 flex items-center gap-1 opacity-65">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 100 100" fill="none">
+                                    <path d="M72 22 A38 38 0 1 0 72 78 L60 66 A21 21 0 1 1 60 34 Z" fill="#0284c7"/>
+                                    <path d="M44 30 L56 30 L66 44 L76 30 L88 30 L72 50 L88 70 L76 70 L66 56 L56 70 L44 70 L60 50 Z" fill="#06b6d4"/>
+                                </svg>
+                                <span class="font-cairo font-extrabold text-[10px]">CODEX</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- إشعار خفيف -->
+    <div id="notifyBox" class="fixed bottom-4 left-4 bg-slate-800 border border-cyan-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl opacity-0 translate-y-4 transition-all duration-200 pointer-events-none z-50">
+        تم التحديث
+    </div>
+
+    <script>
+        // تعريف بيانات كل مادة (بما في ذلك الإنجليزي بالكامل بدون عربي)
+        const SUBJECTS = {
+            arabic: {
+                isEn: false,
+                tpl: 'tpl-arabic',
+                mainTitle: 'شهادة تقدير وتفوق',
+                subTitle: 'في مادة اللغة العربية وآدابها',
+                pill: 'اللغة العربية',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لتفوقه المتميز وأدائه الرائع واجتهاده المستمر في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            },
+            math: {
+                isEn: false,
+                tpl: 'tpl-math',
+                mainTitle: 'شهادة تميز رياضي',
+                subTitle: 'في مادة الرياضيات والمنطق',
+                pill: 'الرياضيات',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لدقته الحسابية وتفوقه الواضح في حل المسائل في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            },
+            science: {
+                isEn: false,
+                tpl: 'tpl-science',
+                mainTitle: 'شهادة تفوق علمي',
+                subTitle: 'في مادة العلوم والاستكشاف',
+                pill: 'العلوم',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لشغفه العلمي وتميزه في التجارب والملاحظة في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            },
+            english: {
+                isEn: true,
+                tpl: 'tpl-english',
+                mainTitle: 'Certificate of Excellence',
+                subTitle: 'FOR OUTSTANDING ACHIEVEMENT IN ENGLISH',
+                pill: 'English Language',
+                lead: 'This certificate is proudly awarded to:',
+                teacherRole: 'Subject Teacher',
+                dateRole: 'Date',
+                defaultSchool: 'Al-Noor Modern School',
+                defaultReason: 'In recognition of outstanding performance, fluency, and dedication in',
+                defaultTeacher: 'Mr. Khaled Bin Saad',
+                defaultDate: 'November 22, 2026'
+            },
+            english_ar: {
+                isEn: false,
+                tpl: 'tpl-english-ar',
+                mainTitle: 'شهادة تقدير وتفوق',
+                subTitle: 'في مادة اللغة الإنجليزية',
+                pill: 'اللغة الإنجليزية',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لمستواه المتميز وإتقانه لمهارات اللغة في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            },
+            cs: {
+                isEn: false,
+                tpl: 'tpl-cs',
+                mainTitle: 'شهادة إبداع تقني',
+                subTitle: 'في مادة الحاسب الآلي والبرمجة',
+                pill: 'الحاسب والبرمجة',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لمهاراته البرمجية وتفكيره التقني المبدع في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            },
+            social: {
+                isEn: false,
+                tpl: 'tpl-social',
+                mainTitle: 'شهادة تقدير وتفوق',
+                subTitle: 'في مادة الدراسات الاجتماعية والتاريخ',
+                pill: 'الدراسات الاجتماعية',
+                lead: 'تُمنح هذه الشهادة بكل فخر واعتزاز إلى الطالب المتميز:',
+                teacherRole: 'مُدرّس المادة',
+                dateRole: 'التاريخ',
+                defaultSchool: 'مدرسة النور الحديثة',
+                defaultReason: 'تقديراً لوعيه التاريخي وثقافته المعرفية المتميزة في مادة',
+                defaultTeacher: 'أ. خالد بن سعد',
+                defaultDate: '٢٢ نوفمبر ٢٠٢٦ م'
+            }
+        };
+
+        // حالة التطبيق (فارغة من الطلاب في البداية لكي يضيفهم المدرس بنفسه)
+        let currentKey = 'arabic';
+        let studentsList = [];
+        let activeIdx = -1;
+
+        function notify(msg) {
+            const box = document.getElementById('notifyBox');
+            box.textContent = msg;
+            box.classList.remove('opacity-0', 'translate-y-4');
+            clearTimeout(window._notifyTimer);
+            window._notifyTimer = setTimeout(() => {
+                box.classList.add('opacity-0', 'translate-y-4');
+            }, 2200);
+        }
+
+        function setSubject(key) {
+            const cfg = SUBJECTS[key];
+            if (!cfg) return;
+            currentKey = key;
+
+            // تحديث حالة أزرار المواد
+            document.querySelectorAll('.subj-card').forEach(btn => {
+                const active = btn.dataset.key === key;
+                btn.className = active
+                    ? 'subj-card ' + (btn.classList.contains('col-span-2') ? 'col-span-2 ' : '') + 'text-right px-3 py-2 rounded-xl text-xs font-bold border border-cyan-500 bg-cyan-500/15 text-cyan-200 transition cursor-pointer'
+                    : 'subj-card ' + (btn.classList.contains('col-span-2') ? 'col-span-2 ' : '') + 'text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer';
+            });
+
+            // تحديث اتجاه الشهادة (إنجليزي بالكامل من اليسار لليمين بدون أي عربي)
+            const sheet = document.getElementById('certificateSheet');
+            sheet.className = `cert-canvas ${cfg.tpl} p-6 flex flex-col justify-between select-none`;
+            sheet.setAttribute('dir', cfg.isEn ? 'ltr' : 'rtl');
+
+            // تحديث النصوص الثابتة الخاصة بالمادة
+            document.getElementById('certMainHeading').textContent = cfg.mainTitle;
+            document.getElementById('certSubHeading').textContent = cfg.subTitle;
+            document.getElementById('certSubjectPillText').textContent = cfg.pill;
+            document.getElementById('certLeadText').textContent = cfg.lead;
+            document.getElementById('certTeacherRole').textContent = cfg.teacherRole;
+            document.getElementById('certDateRole').textContent = cfg.dateRole;
+
+            // تعبئة قيم افتراضية مناسبة للغة الشهادة
+            document.getElementById('schoolInput').value = cfg.defaultSchool;
+            document.getElementById('reasonInput').value = cfg.defaultReason;
+            document.getElementById('teacherInput').value = cfg.defaultTeacher;
+            document.getElementById('dateInput').value = cfg.defaultDate;
+
+            syncCertificate();
+            scaleStage();
+        }
+
+        function onGradeToggle() {
+            const checked = document.getElementById('toggleGradeCheck').checked;
+            document.getElementById('gradeFieldsWrap').classList.toggle('hidden', !checked);
+            document.getElementById('gradeCircleBadge').classList.toggle('hidden', !checked);
+
+            // إذا تم إلغاء الدرجة، يتم إيقاف المراكز تلقائياً لأن المراكز لا تعمل إلا بالدرجة
+            if (!checked) {
+                document.getElementById('toggleRanksCheck').checked = false;
+            }
+            updateRankVisibility();
+            renderStudentsUI();
+            syncCertificate();
+        }
+
+        function onRanksToggle() {
+            const gradeChecked = document.getElementById('toggleGradeCheck').checked;
+            const ranksChecked = document.getElementById('toggleRanksCheck').checked;
+            if (!gradeChecked && ranksChecked) {
+                document.getElementById('toggleRanksCheck').checked = false;
+                return;
+            }
+            updateRankVisibility();
+            renderStudentsUI();
+            syncCertificate();
+        }
+
+        function updateRankVisibility() {
+            const gradeChecked = document.getElementById('toggleGradeCheck').checked;
+            const ranksChecked = document.getElementById('toggleRanksCheck').checked;
+            const showRank = gradeChecked && ranksChecked && studentsList.length > 0;
+            document.getElementById('rankBadgeBox').classList.toggle('hidden', !showRank);
+        }
+
+        // تحويل رقم الترتيب (1, 2, 3...) إلى اسم مركز عربي أو إنجليزي
+        function formatRankLabel(rankNum, isEn) {
+            if (isEn) {
+                if (rankNum === 1) return '1st Place';
+                if (rankNum === 2) return '2nd Place';
+                if (rankNum === 3) return '3rd Place';
+                return `${rankNum}th Place`;
+            }
+            const arOrdinals = {
+                1: 'المركز الأول',
+                2: 'المركز الثاني',
+                3: 'المركز الثالث',
+                4: 'المركز الرابع',
+                5: 'المركز الخامس',
+                6: 'المركز السادس',
+                7: 'المركز السابع',
+                8: 'المركز الثامن',
+                9: 'المركز التاسع',
+                10: 'المركز العاشر'
+            };
+            return arOrdinals[rankNum] || `المركز رقم ${rankNum}`;
+        }
+
+        // حساب مراكز الطلاب بناءً على درجاتهم (مع إعطاء نفس المركز للمتساوين في الدرجة)
+        function computeStudentRanks() {
+            const ranksMap = new Map();
+            if (studentsList.length === 0) return ranksMap;
+
+            // تحويل الدرجات إلى أرقام (مع دعم الأرقام العربية والهندية)
+            const parseScore = (val) => {
+                const normalized = String(val || '0')
+                    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+                    .replace(/[^\d.-]/g, '');
+                const num = parseFloat(normalized);
+                return Number.isNaN(num) ? 0 : num;
+            };
+
+            const sortedIndices = studentsList
+                .map((st, idx) => ({ idx, score: parseScore(st.earned) }))
+                .sort((a, b) => b.score - a.score);
+
+            let currentRank = 1;
+            for (let i = 0; i < sortedIndices.length; i++) {
+                if (i > 0 && sortedIndices[i].score < sortedIndices[i - 1].score) {
+                    currentRank = i + 1;
+                }
+                ranksMap.set(sortedIndices[i].idx, currentRank);
+            }
+            return ranksMap;
+        }
+
+        function onStudentEarnedChange(val) {
+            if (activeIdx >= 0 && studentsList[activeIdx]) {
+                studentsList[activeIdx].earned = val;
+                renderStudentsUI();
+            } else {
+                syncCertificate();
+            }
+        }
+
+        function addStudentItem() {
+            const input = document.getElementById('studentNameInput');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const earned = document.getElementById('studentEarnedInput').value || '50';
+            studentsList.push({ name, earned });
+            activeIdx = studentsList.length - 1;
+            input.value = '';
+            renderStudentsUI();
+            notify(`تمت إضافة "${name}"`);
+        }
+
+        function removeStudentItem(idx) {
+            studentsList.splice(idx, 1);
+            if (studentsList.length === 0) {
+                activeIdx = -1;
+            } else if (activeIdx >= studentsList.length) {
+                activeIdx = studentsList.length - 1;
+            }
+            if (activeIdx >= 0) {
+                document.getElementById('studentEarnedInput').value = studentsList[activeIdx].earned;
+            }
+            renderStudentsUI();
+        }
+
+        function pickStudent(idx) {
+            activeIdx = idx;
+            if (studentsList[idx]) {
+                document.getElementById('studentEarnedInput').value = studentsList[idx].earned;
+            }
+            renderStudentsUI();
+        }
+
+        function stepStudent(delta) {
+            if (studentsList.length === 0) return;
+            activeIdx = (activeIdx + delta + studentsList.length) % studentsList.length;
+            document.getElementById('studentEarnedInput').value = studentsList[activeIdx].earned;
+            renderStudentsUI();
+        }
+
+        function renderStudentsUI() {
+            const listEl = document.getElementById('studentsVerticalList');
+            const counterEl = document.getElementById('studentCounter');
+            counterEl.textContent = `${studentsList.length} ${studentsList.length === 1 ? 'طالب' : 'طلاب'}`;
+
+            listEl.innerHTML = '';
+            if (studentsList.length === 0) {
+                listEl.innerHTML = `<div class="text-[11px] text-slate-500 text-center py-2.5 border border-dashed border-slate-800 rounded-xl">أضف أسماء الطلاب لتظهر تحت بعضها هنا</div>`;
+                syncCertificate();
+                return;
+            }
+
+            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked;
+            const maxScore = document.getElementById('studentMaxInput').value || '50';
+            const ranksMap = showRanks ? computeStudentRanks() : null;
+            const isEn = SUBJECTS[currentKey]?.isEn || false;
+
+            studentsList.forEach((st, i) => {
+                const row = document.createElement('div');
+                const selected = i === activeIdx;
+                row.className = `flex items-center justify-between px-3 py-1.5 rounded-xl text-xs border transition ${
+                    selected ? 'bg-cyan-500/15 border-cyan-500/60 text-white font-bold' : 'bg-slate-900 border-slate-800 text-slate-300'
+                }`;
+
+                const scoreSpan = showGrade
+                    ? `<span class="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">${st.earned}/${maxScore}</span>`
+                    : '';
+
+                const rankSpan = showRanks && ranksMap.has(i)
+                    ? `<span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold">${formatRankLabel(ranksMap.get(i), isEn)}</span>`
+                    : '';
+
+                row.innerHTML = `
+                    <button type="button" onclick="pickStudent(${i})" class="flex items-center gap-2 flex-1 text-right truncate cursor-pointer">
+                        <span class="text-cyan-400 font-mono">${i + 1}.</span>
+                        <span class="truncate">${st.name}</span>
+                        ${scoreSpan}
+                        ${rankSpan}
+                    </button>
+                    <div class="flex items-center gap-1 mr-2">
+                        <button type="button" onclick="exportByIndex(${i})" title="تحميل PDF" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-600 text-[10px] text-cyan-300 hover:text-white font-bold transition cursor-pointer">PDF</button>
+                        <button type="button" onclick="removeStudentItem(${i})" title="حذف" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-rose-600 text-[10px] text-slate-400 hover:text-white font-bold transition cursor-pointer">✕</button>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+
+            syncCertificate();
+        }
+
+        function syncCertificate() {
+            const cfg = SUBJECTS[currentKey];
+            const activeSt = (activeIdx >= 0 && studentsList[activeIdx]) ? studentsList[activeIdx] : null;
+            const displayName = activeSt ? activeSt.name : (cfg.isEn ? 'Student Name' : 'اسم الطالب');
+
+            document.getElementById('activeStudentPreviewLabel').textContent = displayName;
+            document.getElementById('certStudentName').textContent = displayName;
+
+            document.getElementById('certSchoolName').textContent = document.getElementById('schoolInput').value;
+            document.getElementById('certReasonText').textContent = document.getElementById('reasonInput').value;
+            document.getElementById('certTeacherVal').textContent = document.getElementById('teacherInput').value;
+            document.getElementById('certDateVal').textContent = document.getElementById('dateInput').value;
+
+            const earned = activeSt ? activeSt.earned : (document.getElementById('studentEarnedInput').value || '50');
+            const maxVal = document.getElementById('studentMaxInput').value || '50';
+            document.getElementById('circleEarnedVal').textContent = earned;
+            document.getElementById('circleMaxVal').textContent = maxVal;
+
+            // تحديث شارة المركز على الشهادة
+            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked && activeIdx >= 0;
+            updateRankVisibility();
+            if (showRanks) {
+                const ranksMap = computeStudentRanks();
+                const rankNum = ranksMap.get(activeIdx) || 1;
+                document.getElementById('rankBadgeText').textContent = formatRankLabel(rankNum, cfg.isEn);
+            }
+        }
+
+        function scaleStage() {
+            const stage = document.getElementById('previewStage');
+            const sheet = document.getElementById('certificateSheet');
+            if (!stage || !sheet) return;
+
+            const baseW = 1120;
+            const baseH = 792;
+            const availW = stage.clientWidth || window.innerWidth;
+            const ratio = Math.min(1, Math.max(0.22, availW / baseW));
+
+            sheet.style.transform = `scale(${ratio})`;
+            sheet.style.transformOrigin = 'top center';
+            stage.style.height = `${Math.ceil(baseH * ratio)}px`;
+        }
+
+        async function buildAndSavePDF(nameText, earnedText) {
+            const sheet = document.getElementById('certificateSheet');
+            const prevTransform = sheet.style.transform;
+            const prevHeight = document.getElementById('previewStage').style.height;
+
+            // تثبيت الحجم 1:1 أثناء الالتقاط لضمان ثبات الأبعاد ومنع التعليق
+            sheet.style.transform = 'scale(1)';
+            document.getElementById('certStudentName').textContent = nameText;
+            document.getElementById('circleEarnedVal').textContent = earnedText;
+
+            const cfg = SUBJECTS[currentKey];
+            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked;
+            if (showRanks) {
+                const idx = studentsList.findIndex(s => s.name === nameText);
+                const ranksMap = computeStudentRanks();
+                const rankNum = idx >= 0 ? (ranksMap.get(idx) || 1) : 1;
+                document.getElementById('rankBadgeText').textContent = formatRankLabel(rankNum, cfg.isEn);
+            }
+
+            await new Promise(r => setTimeout(r, 80));
+
+            const canvas = await html2canvas(sheet, {
+                scale: 1.5,
+                useCORS: true,
+                logging: false,
+                backgroundColor: null
+            });
+
+            sheet.style.transform = prevTransform;
+            document.getElementById('previewStage').style.height = prevHeight;
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            doc.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+
+            const cleanName = nameText.trim().replace(/\s+/g, '_') || 'Certificate';
+            doc.save(`CODEX_${cleanName}.pdf`);
+        }
+
+        async function exportSinglePDF() {
+            const btn = document.getElementById('btnExportOne');
+            btn.disabled = true;
+            try {
+                const st = (activeIdx >= 0 && studentsList[activeIdx])
+                    ? studentsList[activeIdx]
+                    : { name: document.getElementById('certStudentName').textContent, earned: document.getElementById('studentEarnedInput').value || '50' };
+                notify(`جاري تحميل PDF: ${st.name}`);
+                await buildAndSavePDF(st.name, st.earned);
+                notify('تم تحميل ملف PDF بنجاح');
+            } catch (e) {
+                notify('تعذر إنشاء ملف PDF');
+            } finally {
+                btn.disabled = false;
+                syncCertificate();
+            }
+        }
+
+        async function exportByIndex(idx) {
+            pickStudent(idx);
+            await exportSinglePDF();
+        }
+
+        async function exportAllPDFs() {
+            if (studentsList.length === 0) {
+                notify('أضف اسم طالب واحد على الأقل أولاً');
+                return;
+            }
+
+            const bar = document.getElementById('exportStatusBar');
+            const btnAll = document.getElementById('btnExportAll');
+            bar.classList.remove('hidden');
+            btnAll.disabled = true;
+
+            try {
+                for (let i = 0; i < studentsList.length; i++) {
+                    const st = studentsList[i];
+                    bar.textContent = `جاري تصدير ملف PDF (${i + 1} من ${studentsList.length}): ${st.name}`;
+                    await buildAndSavePDF(st.name, st.earned);
+                    await new Promise(r => setTimeout(r, 300));
+                }
+                notify(`تم تصدير ${studentsList.length} ملفات PDF مستقلة`);
+            } catch (e) {
+                notify('حدث خطأ أثناء التصدير الجماعي');
+            } finally {
+                bar.classList.add('hidden');
+                btnAll.disabled = false;
+                syncCertificate();
+            }
+        }
+
+        window.addEventListener('resize', scaleStage);
+        window.addEventListener('orientationchange', () => setTimeout(scaleStage, 150));
+        window.onload = function() {
+            setSubject('arabic');
+            renderStudentsUI();
+            scaleStage();
+            setTimeout(scaleStage, 120);
+        };
+    </script>
+</body>
+</html>
