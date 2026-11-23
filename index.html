@@ -18,13 +18,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* منع التمرير الأفقي غير المرغوب فيه على أي جهاز */
+        html, body {
+            max-width: 100vw;
+            overflow-x: clip;
+        }
+
         /* إعدادات الخطوط */
         .font-cairo { font-family: 'Cairo', sans-serif; }
         .font-amiri { font-family: 'Amiri', serif; }
         .font-ruqaa { font-family: 'Aref Ruqaa', serif; }
         .font-en { font-family: 'Playfair Display', 'Cairo', serif; }
 
-        /* أبعاد الشهادة الثابتة A4 بالعرض (1120px x 792px) لضمان دقة التصدير وعدم التعلق */
+        /* أبعاد الشهادة الثابتة A4 بالعرض (1120px x 792px) لضمان دقة التصدير */
         .cert-canvas {
             width: 1120px;
             height: 792px;
@@ -39,10 +45,11 @@
             letter-spacing: 0 !important;
         }
 
-        /* حاوية المعاينة المتجاوبة */
+        /* حاوية المعاينة المتجاوبة لكل الأجهزة */
         .preview-stage {
             width: 100%;
             max-width: 100%;
+            min-height: 180px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -51,10 +58,10 @@
         }
 
         /* ======================================================
-           تصاميم احترافية فخمة لكل مادة (إطارات حقيقية بدون براويز زوايا)
+           تصاميم احترافية فخمة لكل مادة
            ====================================================== */
 
-        /* 1. اللغة العربية: عاجي مذهب وعنابي ملكي */
+        /* 1. اللغة العربية */
         .tpl-arabic {
             background: linear-gradient(145deg, #fffdf7 0%, #f8efd9 55%, #efe0be 100%);
             border: 12px solid #9a6712;
@@ -66,7 +73,7 @@
         .tpl-arabic .subject-pill { background: #6b1d1d; color: #fce9b2; border: 2px solid #d4af37; }
         .tpl-arabic .rule-line { background: #9a6712; }
 
-        /* 2. الرياضيات: أزرق ملكي هندسي وذهبي */
+        /* 2. الرياضيات */
         .tpl-math {
             background: linear-gradient(145deg, #f8faff 0%, #eaf0fc 100%);
             border: 12px solid #172554;
@@ -78,7 +85,7 @@
         .tpl-math .subject-pill { background: #172554; color: #fde047; border: 2px solid #eab308; }
         .tpl-math .rule-line { background: #1d4ed8; }
 
-        /* 3. العلوم: زمردي عميق وفيروزي راقٍ */
+        /* 3. العلوم */
         .tpl-science {
             background: linear-gradient(145deg, #f3fcf8 0%, #e1f5ec 100%);
             border: 12px solid #064e3b;
@@ -90,7 +97,7 @@
         .tpl-science .subject-pill { background: #064e3b; color: #a7f3d0; border: 2px solid #10b981; }
         .tpl-science .rule-line { background: #059669; }
 
-        /* 4. English (إنجليزي بالكامل بدون أي عربي): كحلي وعنابي كلاسيكي */
+        /* 4. English (إنجليزي بالكامل) */
         .tpl-english {
             background: linear-gradient(145deg, #fcfbf7 0%, #f1ece1 100%);
             border: 12px solid #1e1b4b;
@@ -102,7 +109,7 @@
         .tpl-english .subject-pill { background: #1e1b4b; color: #fde68a; border: 2px solid #b45309; }
         .tpl-english .rule-line { background: #881337; }
 
-        /* 5. اللغة الإنجليزية (بالعربي): أزرق داكن وذهبي */
+        /* 5. اللغة الإنجليزية (بالعربي) */
         .tpl-english-ar {
             background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
             border: 12px solid #0f172a;
@@ -114,7 +121,7 @@
         .tpl-english-ar .subject-pill { background: #0f172a; color: #fde68a; border: 2px solid #d97706; }
         .tpl-english-ar .rule-line { background: #9f1239; }
 
-        /* 6. الحاسب والبرمجة: داكن احترافي بلمسات سيان */
+        /* 6. الحاسب والبرمجة */
         .tpl-cs {
             background: linear-gradient(145deg, #090d16 0%, #111827 100%);
             border: 12px solid #0e7490;
@@ -126,7 +133,7 @@
         .tpl-cs .subject-pill { background: #164e63; color: #a5f3fc; border: 2px solid #22d3ee; }
         .tpl-cs .rule-line { background: #22d3ee; }
 
-        /* 7. الدراسات الاجتماعية والتاريخ: برونزي تراثي دافئ */
+        /* 7. الدراسات الاجتماعية والتاريخ */
         .tpl-social {
             background: linear-gradient(145deg, #fffaf3 0%, #f6e7d4 100%);
             border: 12px solid #78350f;
@@ -147,6 +154,84 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-cairo min-h-screen flex flex-col">
 
+    <!-- نافذة ترحيب خاصة لأصحاب الأكواد المجانية عند أول دخول فقط -->
+    <div id="freeGiftModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-2xl">
+                💛
+            </div>
+            <h2 class="text-lg sm:text-xl font-black text-amber-300">كودكس بتحبك!</h2>
+            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                كودكس بتحبك، عشان كده اديتلك الكود ده ليك إنت مخصوص!
+                <br>
+                تم فتح جميع المميزات لك مجاناً بالكامل.
+            </p>
+            <button type="button" onclick="closeFreeGiftModal()"
+                class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm py-3 rounded-xl transition cursor-pointer">
+                ابدأ الآن واستمتع بجميع المميزات
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة إدخال الكود والتواصل للدفع (50 ج مدى الحياة) -->
+    <div id="codeActivationModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-sm sm:text-base font-extrabold text-cyan-400">تفعيل كود CODEX</h2>
+                <button type="button" onclick="closeCodeModal()" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1 cursor-pointer">✕</button>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                أدخل كود التفعيل الخاص بك لفتح جميع المميزات: الدرجات، المراكز التلقائية، اللغة الإنجليزية، قوالب المواد المتخصصة، تعديل بيانات الشهادة، وإصدار عدد لا نهائي من الشهادات.
+            </p>
+            <div class="space-y-3">
+                <input type="text" id="activationCodeInput" dir="ltr" autocomplete="off" placeholder="اكتب الكود هنا..."
+                    onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitActivationCode(); }"
+                    class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono outline-none">
+                <p id="activationErrorMsg" class="hidden text-[11px] text-rose-400 font-bold"></p>
+                <button type="button" onclick="submitActivationCode()"
+                    class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-xs sm:text-sm py-2.5 rounded-xl transition cursor-pointer">
+                    تفعيل الكود
+                </button>
+            </div>
+            <div class="bg-slate-950/80 border border-amber-500/30 rounded-2xl p-3.5 text-center space-y-2">
+                <p class="text-[11px] text-amber-200 font-bold leading-relaxed">
+                    اللي عاوز ياخد جميع المميزات يدخل يدفع 50 ج يحول وهنبعتلك كود تكتبه تخش به طول عمرك
+                </p>
+                <div class="text-xs font-mono font-extrabold text-emerald-400" dir="ltr">WhatsApp: 01202060125</div>
+                <a href="https://wa.me/201202060125?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A8%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D8%AD%D9%88%D9%8A%D9%84%2050%20%D8%AC%D9%86%D9%8A%D9%87%D8%A7%D9%8B%20%D9%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%89%20%D9%83%D9%88%D8%AF%20CODEX%20%D9%85%D8%AF%D9%89%20%D8%A7%D9%84%D8%AD%D9%8A%D8%A7%D8%A9"
+                   target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+                    تواصل واتساب للدفع (01202060125)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة اختيار طريقة تحميل PDF (ملف واحد شامل أو ملف مستقل لكل طالب) -->
+    <div id="pdfModeModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-sm sm:text-base font-extrabold text-cyan-400">اختر طريقة تنزيل ملفات PDF</h2>
+                <button type="button" onclick="closePdfModeModal()" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1 cursor-pointer">✕</button>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                الشهادات مهيأة بمقاس A4 أفقي بدقة عالية ومناسبة تماماً للطباعة المباشرة:
+            </p>
+            <div class="space-y-2.5">
+                <button type="button" onclick="confirmExportMode('merged')"
+                    class="w-full text-right bg-cyan-600 hover:bg-cyan-500 text-white p-3.5 rounded-2xl transition cursor-pointer">
+                    <div class="text-xs sm:text-sm font-extrabold">١. كل الشهادات في ملف PDF واحد</div>
+                    <div class="text-[11px] text-cyan-100 mt-0.5">يجمع كل الطلاب في ملف PDF واحد (كل طالب في صفحة مستقلة للطباعة)</div>
+                </button>
+                <button type="button" onclick="confirmExportMode('separate')"
+                    class="w-full text-right bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 p-3.5 rounded-2xl transition cursor-pointer">
+                    <div class="text-xs sm:text-sm font-extrabold text-amber-300">٢. كل طالب في ملف PDF لوحده</div>
+                    <div class="text-[11px] text-slate-300 mt-0.5">ينزّل ملف PDF مستقل لكل طالب باسمه جاهز للطباعة أو الإرسال</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- شريط علوي أنيق وخفيف -->
     <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2 sm:gap-3 sticky top-0 z-30">
         <div class="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -158,156 +243,223 @@
                 <span class="font-black text-base sm:text-lg text-slate-900">CODEX</span>
             </div>
             <div class="truncate">
-                <h1 class="text-xs sm:text-base font-extrabold text-white truncate">استوديو الشهادات الاحترافي</h1>
-                <p class="hidden sm:block text-[11px] text-slate-400">سريع • لكل مادة شكل خاص • تصدير PDF مستقل لكل طالب</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-xs sm:text-base font-extrabold text-white truncate">استوديو الشهادات الاحترافي</h1>
+                    <span id="planStatusBadge" class="text-[10px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        الوضع المجاني (متبقي 3 من 3 شهادات فقط)
+                    </span>
+                </div>
+                <p class="hidden sm:block text-[11px] text-slate-400">لكل مادة شكل خاص • تصدير PDF للطباعة (ملف موحد أو ملف لكل طالب)</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-end">
+        <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-end flex-wrap">
+            <button type="button" id="btnOpenCodeModal" onclick="openCodeModal()"
+                class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] sm:text-sm font-extrabold px-3 py-2 rounded-xl transition cursor-pointer shadow-sm">
+                إدخال الكود
+            </button>
+            <button type="button" id="btnOpenAdminModal" onclick="openAdminModal()"
+                class="bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 text-emerald-300 text-[11px] sm:text-sm font-bold px-3 py-2 rounded-xl transition cursor-pointer">
+                لوحة المشرف
+            </button>
             <button type="button" id="btnExportOne" onclick="exportSinglePDF()"
                 class="flex-1 sm:flex-initial bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 text-[11px] sm:text-sm font-bold px-2.5 sm:px-3.5 py-2 rounded-xl transition cursor-pointer">
                 تحميل PDF الحالي
             </button>
-            <button type="button" id="btnExportAll" onclick="exportAllPDFs()"
+            <button type="button" id="btnExportAll" onclick="openPdfModeModal()"
                 class="flex-1 sm:flex-initial bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl transition cursor-pointer shadow-md">
-                تصدير كل الطلاب PDF
+                تحميل الشهادات PDF
             </button>
         </div>
     </header>
 
-    <!-- شريط التقدم عند تصدير عدة ملفات -->
+    <!-- شريط التقدم عند تصدير ملفات PDF -->
     <div id="exportStatusBar" class="hidden bg-cyan-950 border-b border-cyan-800 text-cyan-200 text-xs sm:text-sm font-bold py-2 px-4 text-center">
         جاري تجهيز ملفات الـ PDF...
     </div>
 
-    <!-- المحتوى الرئيسي -->
-    <div class="flex-1 flex flex-col lg:flex-row">
+    <!-- المحتوى الرئيسي: الإعدادات فوق والشهادة تحت -->
+    <div class="flex-1 flex flex-col">
 
-        <!-- لوحة التحكم الجانبية -->
-        <aside class="w-full lg:w-[400px] bg-slate-900 border-b lg:border-b-0 lg:border-l border-slate-800 p-4 sm:p-5 lg:h-[calc(100vh-61px)] lg:overflow-y-auto flex-shrink-0 space-y-4">
+        <!-- شريط اشتراك سريع وإدخال الكود في الأعلى لتسهيل الوصول -->
+        <section id="topSubscribeBar" class="bg-slate-900/95 border-b border-slate-800 px-3 sm:px-6 py-3">
+            <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-gradient-to-l from-amber-500/15 via-slate-950/80 to-cyan-500/10 border border-amber-500/35 rounded-2xl p-3 sm:px-4">
+                <div class="space-y-0.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs sm:text-sm font-extrabold text-amber-300">👑 اشتراك الـ 50 ج مدى الحياة</span>
+                        <span id="topTierTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">الوضع المجاني</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                        اللي عاوز ياخد جميع المميزات يدخل يدفع 50 ج يحول وهنبعتلك كود تكتبه تخش به طول عمرك
+                    </p>
+                </div>
 
-            <!-- 1. اختيار المادة -->
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5">
-                <div class="text-xs font-extrabold text-cyan-400 mb-2.5">١. اختر المادة الدراسية</div>
-                <div class="grid grid-cols-2 gap-2" id="subjectsGrid">
-                    <button type="button" data-key="arabic" onclick="setSubject('arabic')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-amber-500 bg-amber-500/15 text-amber-200 transition cursor-pointer">
-                        اللغة العربية
-                    </button>
-                    <button type="button" data-key="math" onclick="setSubject('math')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        الرياضيات
-                    </button>
-                    <button type="button" data-key="science" onclick="setSubject('science')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        العلوم
-                    </button>
-                    <button type="button" data-key="english" onclick="setSubject('english')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        English (إنجليزي بالكامل)
-                    </button>
-                    <button type="button" data-key="english_ar" onclick="setSubject('english_ar')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        اللغة الإنجليزية (بالعربي)
-                    </button>
-                    <button type="button" data-key="cs" onclick="setSubject('cs')" class="subj-card text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        الحاسب والبرمجة
-                    </button>
-                    <button type="button" data-key="social" onclick="setSubject('social')" class="subj-card col-span-2 text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer">
-                        الدراسات الاجتماعية والتاريخ
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <span class="text-[11px] font-mono font-bold text-emerald-400 bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-xl" dir="ltr">
+                        WA: 01202060125
+                    </span>
+                    <a href="https://wa.me/201202060125?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A8%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D8%AD%D9%88%D9%8A%D9%84%2050%20%D8%AC%D9%86%D9%8A%D9%87%D8%A7%D9%8B%20%D9%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%89%20%D9%83%D9%88%D8%AF%20CODEX%20%D9%85%D8%AF%D9%89%20%D8%A7%D9%84%D8%AD%D9%8A%D8%A7%D8%A9"
+                       target="_blank" rel="noopener noreferrer"
+                       class="text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl transition">
+                        تحويل واتساب
+                    </a>
+                    <button type="button" onclick="openCodeModal()"
+                        class="text-xs font-extrabold bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-2 rounded-xl transition cursor-pointer">
+                        اكتب الكود
                     </button>
                 </div>
             </div>
+        </section>
 
-            <!-- 2. أسماء الطلاب تحت بعضهم (بدون أسماء تجريبية) -->
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-3">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-extrabold text-cyan-400">٢. قائمة الطلاب</span>
-                    <span id="studentCounter" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-bold">0 طالب</span>
+        <!-- لوحة الإعدادات العلوية -->
+        <aside class="w-full bg-slate-900 border-b border-slate-800 p-4 sm:p-6">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                <!-- 1. اختيار المادة -->
+                <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-xs font-extrabold text-cyan-400">١. اختر المادة الدراسية</span>
+                        <span id="langLockHint" class="text-[10px] text-amber-400 font-bold">🔒 أغلب المواد بالكود</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="subjectsGrid">
+                        <button type="button" data-key="arabic" onclick="setSubject('arabic')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-cyan-500 bg-cyan-500/15 text-cyan-200 transition cursor-pointer flex items-center justify-between">
+                            <span>اللغة العربية</span>
+                            <span class="text-[10px] text-emerald-400">مجاني</span>
+                        </button>
+                        <button type="button" data-key="math" onclick="setSubject('math')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>الرياضيات</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                        <button type="button" data-key="science" onclick="setSubject('science')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>العلوم</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                        <button type="button" data-key="english" id="btnSubjectEnglish" onclick="setSubject('english')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>English (إنجليزي)</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                        <button type="button" data-key="english_ar" onclick="setSubject('english_ar')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>اللغة الإنجليزية (بالعربي)</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                        <button type="button" data-key="cs" onclick="setSubject('cs')" class="subj-card text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>الحاسب والبرمجة</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                        <button type="button" data-key="social" onclick="setSubject('social')" class="subj-card sm:col-span-2 text-right px-3 py-2.5 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer flex items-center justify-between">
+                            <span>الدراسات الاجتماعية والتاريخ</span>
+                            <span class="subj-lock text-[11px]">🔒</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex gap-2">
-                    <input type="text" id="studentNameInput" placeholder="اكتب اسم الطالب..."
-                        onkeydown="if(event.key==='Enter'){ event.preventDefault(); addStudentItem(); }"
-                        class="flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <button type="button" onclick="addStudentItem()"
-                        class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition cursor-pointer">
-                        إضافة
-                    </button>
-                </div>
-
-                <!-- عرض الطلاب تحت بعض -->
-                <div id="studentsVerticalList" class="flex flex-col gap-1.5 max-h-40 overflow-y-auto"></div>
-            </div>
-
-            <!-- 3. الدرجة (علامة صح لإضافة دائرة وبها شرطة في المنتصف + جاب كام ومن كام) -->
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="toggleGradeCheck" onchange="onGradeToggle()"
-                        class="w-4 h-4 accent-cyan-500 rounded cursor-pointer">
-                    <span class="text-xs font-bold text-amber-300">إضافة الدرجة (دائرة وشرطة في النص)</span>
-                </label>
-
-                <div id="gradeFieldsWrap" class="hidden space-y-2.5 pt-1">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[11px] text-slate-400 mb-1">الطالب جاب كام</label>
-                            <input type="text" id="studentEarnedInput" value="50" oninput="onStudentEarnedChange(this.value)"
-                                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-cyan-300 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-400 mb-1">الدرجة من كام</label>
-                            <input type="text" id="studentMaxInput" value="50" oninput="syncCertificate()"
-                                class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-amber-300 outline-none">
-                        </div>
+                <!-- 2. قائمة الطلاب -->
+                <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-cyan-400">٢. قائمة الطلاب</span>
+                        <span id="studentCounter" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-bold">0 / 3 طلاب</span>
                     </div>
 
-                    <!-- خيار المراكز التلقائية (يعمل فقط عند تفعيل الدرجة) -->
-                    <div class="pt-2 border-t border-slate-800/80">
+                    <div class="flex gap-2">
+                        <input type="text" id="studentNameInput" placeholder="اكتب اسم الطالب..."
+                            onkeydown="if(event.key==='Enter'){ event.preventDefault(); addStudentItem(); }"
+                            class="flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        <button type="button" onclick="addStudentItem()"
+                            class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition cursor-pointer">
+                            إضافة
+                        </button>
+                    </div>
+
+                    <!-- قائمة الطلاب تحت بعض -->
+                    <div id="studentsVerticalList" class="flex flex-col gap-1.5 max-h-40 overflow-y-auto"></div>
+
+                    <!-- أزرار سريعة أسفل قائمة الطلاب -->
+                    <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 text-[11px]">
+                        <button type="button" onclick="stepStudent(-1)" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold cursor-pointer">▶ السابق</button>
+                        <button type="button" onclick="stepStudent(1)" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold cursor-pointer">التالي ◀</button>
+                        <button type="button" onclick="openPdfModeModal()" class="px-2.5 py-1 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 font-bold cursor-pointer">تصدير PDF</button>
+                    </div>
+                </div>
+
+                <!-- 3. الدرجة والمراكز -->
+                <div id="gradeSectionBox" class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                            <input type="checkbox" id="toggleRanksCheck" onchange="onRanksToggle()"
-                                class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                            <span class="text-xs font-bold text-emerald-300">حساب المراكز تلقائياً بالدرجات</span>
+                            <input type="checkbox" id="toggleGradeCheck" onchange="onGradeToggle()"
+                                class="w-4 h-4 accent-cyan-500 rounded cursor-pointer">
+                            <span class="text-xs font-bold text-amber-300">إضافة الدرجة (دائرة وشرطة في النص)</span>
                         </label>
-                        <p class="text-[10px] text-slate-500 mt-1">يرتب الطلاب تلقائياً من الأعلى درجة للأقل (مع مراعاة تساوي الدرجات)</p>
+                        <span id="gradeLockBadge" class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">🔒 بالكود</span>
+                    </div>
+
+                    <div id="gradeFieldsWrap" class="hidden space-y-2.5 pt-1">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">الطالب جاب كام</label>
+                                <input type="text" id="studentEarnedInput" value="50" oninput="onStudentEarnedChange(this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-cyan-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">الدرجة من كام</label>
+                                <input type="text" id="studentMaxInput" value="50" oninput="syncCertificate()"
+                                    class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 py-1.5 text-xs text-center font-bold text-amber-300 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800/80">
+                            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                                <input type="checkbox" id="toggleRanksCheck" onchange="onRanksToggle()"
+                                    class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                                <span class="text-xs font-bold text-emerald-300">حساب المراكز تلقائياً بالدرجات</span>
+                            </label>
+                            <p class="text-[10px] text-slate-500 mt-1">يرتب الطلاب تلقائياً من الأعلى درجة للأقل (مع مراعاة تساوي الدرجات)</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 4. بيانات المدرسة والمدرس والتاريخ والسبب -->
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
-                <div class="text-xs font-extrabold text-cyan-400">٣. بيانات الشهادة</div>
+                <!-- 4. بيانات المدرسة والمدرس والتاريخ والسبب -->
+                <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-cyan-400">٣. بيانات الشهادة</span>
+                        <span id="customFieldsLockBadge" class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">🔒 التعديل بالكود</span>
+                    </div>
 
-                <div>
-                    <label class="block text-[11px] text-slate-400 mb-1">اسم المدرسة</label>
-                    <input type="text" id="schoolInput" value="مدرسة النور الحديثة" oninput="syncCertificate()"
-                        class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-[11px] text-slate-400 mb-1">سبب أخذ الشهادة</label>
-                    <textarea id="reasonInput" rows="2" oninput="syncCertificate()"
-                        class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">تقديراً لتفوقه المتميز وأدائه الرائع واجتهاده المستمر في مادة</textarea>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-[11px] text-slate-400 mb-1">اسم المدرس</label>
-                        <input type="text" id="teacherInput" value="أ. خالد بن سعد" oninput="syncCertificate()"
+                        <label class="block text-[11px] text-slate-400 mb-1">اسم المدرسة</label>
+                        <input type="text" id="schoolInput" value="مدرسة النور الحديثة" oninput="syncCertificate()"
                             class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     </div>
+
                     <div>
-                        <label class="block text-[11px] text-slate-400 mb-1">التاريخ</label>
-                        <input type="text" id="dateInput" value="٢٢ نوفمبر ٢٠٢٦ م" oninput="syncCertificate()"
-                            class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        <label class="block text-[11px] text-slate-400 mb-1">سبب أخذ الشهادة</label>
+                        <textarea id="reasonInput" rows="2" oninput="syncCertificate()"
+                            class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">تقديراً لتفوقه المتميز وأدائه الرائع واجتهاده المستمر في مادة</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">اسم المدرس</label>
+                            <input type="text" id="teacherInput" value="أ. خالد بن سعد" oninput="syncCertificate()"
+                                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">التاريخ</label>
+                            <input type="text" id="dateInput" value="٢٢ نوفمبر ٢٠٢٦ م" oninput="syncCertificate()"
+                                class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </aside>
 
-        <!-- منطقة المعاينة الفورية -->
-        <main class="flex-1 bg-slate-950 p-4 sm:p-7 flex flex-col items-center">
+        <!-- منطقة الشهادة في الأسفل -->
+        <main class="flex-1 bg-slate-950 p-3 sm:p-6 flex flex-col items-center min-w-0">
 
             <!-- شريط التنقل بين الطلاب -->
-            <div class="mb-4 flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-1.5 rounded-full text-xs">
+            <div class="mb-4 flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-1.5 rounded-full text-xs max-w-full">
                 <button type="button" onclick="stepStudent(-1)" class="text-slate-400 hover:text-cyan-400 px-1 cursor-pointer">▶</button>
-                <span class="text-slate-300 font-bold">المعاينة: <span id="activeStudentPreviewLabel" class="text-cyan-400">اسم الطالب</span></span>
+                <span class="text-slate-300 font-bold truncate">المعاينة: <span id="activeStudentPreviewLabel" class="text-cyan-400">اسم الطالب</span></span>
                 <button type="button" onclick="stepStudent(1)" class="text-slate-400 hover:text-cyan-400 px-1 cursor-pointer">◀</button>
             </div>
 
@@ -319,13 +471,13 @@
                     <div class="inner-border w-full h-full p-8 flex flex-col justify-between relative">
 
                         <!-- دائرة الدرجة (دائرة وبها شرطة في المنتصف) -->
-                        <div id="gradeCircleBadge" class="hidden absolute top-7 left-7 w-24 h-24 rounded-full border-[3px] border-current flex flex-col items-center justify-center bg-white/50">
+                        <div id="gradeCircleBadge" class="hidden absolute top-7 left-7 w-24 h-24 rounded-full border-[3px] border-current flex flex-col items-center justify-center bg-white/70">
                             <span id="circleEarnedVal" class="font-cairo font-black text-xl leading-none">50</span>
                             <div class="w-14 h-[2.5px] bg-current my-1.5"></div>
                             <span id="circleMaxVal" class="font-cairo font-black text-xl leading-none">50</span>
                         </div>
 
-                        <!-- شارة المركز التلقائي (تظهر فقط عند تفعيل الدرجة والمراكز) -->
+                        <!-- شارة المركز التلقائي -->
                         <div id="rankBadgeBox" class="hidden subject-pill px-5 py-1 rounded-full mx-auto mb-1">
                             <span id="rankBadgeText" class="font-cairo font-extrabold text-base">المركز الأول</span>
                         </div>
@@ -385,7 +537,153 @@
                 </div>
 
             </div>
+
+            <!-- رسالة الدعوة للاشتراك والدفع في أسفل الصفحة -->
+            <footer class="w-full max-w-5xl mt-6 space-y-4">
+                <!-- شريط اختيار سريع للقالب والمادة -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="text-xs font-extrabold text-cyan-400">تبديل سريع لتصميم المادة:</div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="setSubject('arabic')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">العربية</button>
+                        <button type="button" onclick="setSubject('math')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/20 hover:text-cyan-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">الرياضيات 🔒</button>
+                        <button type="button" onclick="setSubject('science')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">العلوم 🔒</button>
+                        <button type="button" onclick="setSubject('english')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-500/20 hover:text-indigo-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">English 🔒</button>
+                        <button type="button" onclick="setSubject('cs')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-sky-500/20 hover:text-sky-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">البرمجة 🔒</button>
+                        <button type="button" onclick="setSubject('social')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-[11px] font-bold border border-slate-700 transition cursor-pointer">الدراسات 🔒</button>
+                    </div>
+                </div>
+
+                <!-- بطاقات مقارنة ومميزات تملأ الفراغ السفلي بشكل مرتب -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-1.5">
+                        <div class="text-xs font-extrabold text-slate-300">الوضع المجاني الحالي</div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            مادة اللغة العربية فقط وبحد أقصى ٣ شهادات للطلاب، بدون درجات أو مراكز أو تعديل للبيانات.
+                        </p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-amber-500/15 via-slate-900 to-cyan-500/10 border border-amber-500/40 rounded-2xl p-4 space-y-1.5">
+                        <div class="text-xs font-extrabold text-amber-300">اشتراك الـ 50 ج مدى الحياة</div>
+                        <p class="text-[11px] text-slate-200 leading-relaxed">
+                            افتح كل المواد والإنجليزية والدرجات والمراكز والتعديل الكامل وإصدار شهادات بلا حدود بكود واحد.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-1.5">
+                        <div class="text-xs font-extrabold text-cyan-400">جاهزية الطباعة و PDF</div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            مقاس A4 أفقي (297×210 مم) عالي الجودة، إما ملف موحد لكل الطلاب أو ملف PDF مستقل لكل طالب.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- الصندوق الرئيسي للدفع والتواصل -->
+                <div class="bg-slate-900/95 border border-slate-800 rounded-2xl p-4 sm:p-5 text-center space-y-2.5 shadow-lg">
+                    <p class="text-xs sm:text-sm font-extrabold text-amber-300 leading-relaxed">
+                        اللي عاوز ياخد جميع المميزات يدخل يدفع 50 ج يحول وهنبعتلك كود تكتبه تخش به طول عمرك
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-300">
+                        <span>✓ فتح جميع المواد والإنجليزية</span>
+                        <span>•</span>
+                        <span>✓ الدرجات والمراكز التلقائية</span>
+                        <span>•</span>
+                        <span>✓ تعديل المدرسة والسبب والمدرس والتاريخ</span>
+                        <span>•</span>
+                        <span>✓ شهادات بلا حدود</span>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                        <span class="text-xs font-mono font-bold text-emerald-400 px-2" dir="ltr">WhatsApp: 01202060125</span>
+                        <a href="https://wa.me/201202060125?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A8%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D8%AD%D9%88%D9%8A%D9%84%2050%20%D8%AC%D9%86%D9%8A%D9%87%D8%A7%D9%8B%20%D9%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%89%20%D9%83%D9%88%D8%AF%20CODEX%20%D9%85%D8%AF%D9%89%20%D8%A7%D9%84%D8%AD%D9%8A%D8%A7%D8%A9"
+                           target="_blank" rel="noopener noreferrer"
+                           class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl transition">
+                            تحويل عبر واتساب (01202060125)
+                        </a>
+                        <button type="button" onclick="openCodeModal()"
+                            class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                            إدخال الكود الآن
+                        </button>
+                    </div>
+                    <div class="text-[11px] text-slate-500 pt-1">
+                        CODEX Certificates Studio • جميع الحقوق محفوظة
+                    </div>
+                </div>
+            </footer>
         </main>
+    </div>
+
+    <!-- نافذة لوحة المشرف (CODEX2026) -->
+    <div id="adminPanelModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                    <h2 class="text-sm sm:text-base font-extrabold text-emerald-400">لوحة المشرف — CODEX</h2>
+                    <p class="text-[11px] text-slate-400">متابعة الأكواد المجانية والمدفوعة والتفعيلات المسجلة وإدارة الجلسة</p>
+                </div>
+                <button type="button" onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1 cursor-pointer">✕</button>
+            </div>
+
+            <div id="adminAuthBox" class="space-y-3">
+                <label class="block text-xs font-bold text-slate-300">أدخل كلمة مرور المشرف</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="password" id="adminPassInput" autocomplete="off"
+                        onkeydown="if(event.key==='Enter'){ event.preventDefault(); verifyAdminPass(); }"
+                        class="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-400 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white outline-none">
+                    <button type="button" onclick="verifyAdminPass()"
+                        class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition cursor-pointer">
+                        دخول اللوحة
+                    </button>
+                </div>
+                <p id="adminPassError" class="hidden text-xs text-rose-400 font-bold"></p>
+            </div>
+
+            <div id="adminDashboardBox" class="hidden space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">الأكواد المجانية</div>
+                        <div id="adminFreeTotal" class="text-lg font-black text-amber-300 mt-0.5">0</div>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">الأكواد المدفوعة</div>
+                        <div id="adminPaidTotal" class="text-lg font-black text-emerald-300 mt-0.5">0</div>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 text-center">
+                        <div class="text-[11px] text-slate-400">تفعيلات هذا الجهاز</div>
+                        <div id="adminLogsTotal" class="text-lg font-black text-cyan-300 mt-0.5">0</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/60 border border-slate-800 rounded-2xl p-3">
+                    <div id="adminCurrentSessionInfo" class="text-xs text-slate-300 font-bold">الحالة الحالية: وضع مجاني</div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="exportAdminLogsCSV()"
+                            class="text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl transition cursor-pointer">
+                            تصدير السجل CSV
+                        </button>
+                        <button type="button" onclick="resetGuestCounterAdmin()"
+                            class="text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-xl transition cursor-pointer">
+                            تصفير عداد الـ 3 شهادات
+                        </button>
+                        <button type="button" onclick="lockCurrentSessionAdmin()"
+                            class="text-xs font-bold bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 px-3 py-1.5 rounded-xl transition cursor-pointer">
+                            قفل الكود الحالي
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-800 rounded-2xl">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="py-2.5 px-3">الكود</th>
+                                <th class="py-2.5 px-3">النوع</th>
+                                <th class="py-2.5 px-3">وقت التفعيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminActivationsRows" class="divide-y divide-slate-800/70"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- إشعار خفيف -->
@@ -394,7 +692,744 @@
     </div>
 
     <script>
-        // تعريف بيانات كل مادة (بما في ذلك الإنجليزي بالكامل بدون عربي)
+        // =========================================================================
+        // 1. قاعدة الأكواد المجانية (50 كود) والمدفوعة (1000 كود)
+        // =========================================================================
+        const FREE_CODES = new Set([
+            "FREE-14G0QG", "FREE-18XVZR", "FREE-1P1OV4", "FREE-27V418", "FREE-2CKDDX",
+            "FREE-3BMDHY", "FREE-3BTE4H", "FREE-3RVQ4Q", "FREE-4M0TQ2", "FREE-6B8S09",
+            "FREE-6S64D5", "FREE-76J66Z", "FREE-7MDFAL", "FREE-86OC10", "FREE-8HOA6C",
+            "FREE-8KWNSP", "FREE-9NZ73G", "FREE-9T4HXT", "FREE-BRWZKA", "FREE-C28RTW",
+            "FREE-CKI6Z9", "FREE-CUCUH9", "FREE-DAN4TC", "FREE-DBHG97", "FREE-DDLVZ8",
+            "FREE-DL02LK", "FREE-DLD4GJ", "FREE-DXZ1D9", "FREE-FWPZA9", "FREE-GKMMZH",
+            "FREE-GN2U6Y", "FREE-HNOG67", "FREE-JC7FJP", "FREE-MSRB1W", "FREE-NBOX7D",
+            "FREE-NIOGB4", "FREE-O3TBFR", "FREE-OLHBZU", "FREE-OOX2QY", "FREE-OR4TG0",
+            "FREE-OVXXEF", "FREE-PQU0EV", "FREE-RK99BQ", "FREE-RYXF7C", "FREE-S2FJEX",
+            "FREE-S9S1JR", "FREE-TO6QED", "FREE-U5G6HN", "FREE-VZ29TR", "FREE-XOTGM1"
+        ]);
+
+        // قائمة الأكواد المدفوعة (اشتراك 50 جنيه مدى الحياة)
+        const PAID_CODES_LIST = [
+            "CODEX-2A7K9M", "CODEX-3B8N4P", "CODEX-4C9Q5R", "CODEX-5D2S6T",
+            "CODEX-6E3U7V", "CODEX-7F4W8X", "CODEX-8G5Y9Z", "CODEX-9H6A2B",
+            "CODEX-2J7C3D", "CODEX-3K8E4F", "CODEX-4L9G5H", "CODEX-5M2J6K",
+            "CODEX-6N3L7M", "CODEX-7P4N8P", "CODEX-8Q5Q9R", "CODEX-9R6S2T",
+            "CODEX-2S7U3V", "CODEX-3T8W4X", "CODEX-4U9Y5Z", "CODEX-5V2A6B",
+            "CODEX-6W3C7D", "CODEX-7X4E8F", "CODEX-8Y5G9H", "CODEX-9Z6J2K",
+            "CODEX-2A8L3M", "CODEX-3B9N4P", "CODEX-4C2Q5R", "CODEX-5D3S6T",
+            "CODEX-6E4U7V", "CODEX-7F5W8X", "CODEX-8G6Y9Z", "CODEX-9H7A2B",
+            "CODEX-2J8C3D", "CODEX-3K9E4F", "CODEX-4L2G5H", "CODEX-5M3J6K",
+            "CODEX-6N4L7M", "CODEX-7P5N8P", "CODEX-8Q6Q9R", "CODEX-9R7S2T",
+            "CODEX-2S8U3V", "CODEX-3T9W4X", "CODEX-4U2Y5Z", "CODEX-5V3A6B",
+            "CODEX-6W4C7D", "CODEX-7X5E8F", "CODEX-8Y6G9H", "CODEX-9Z7J2K",
+            "CODEX-2A9L3M", "CODEX-3B2N4P", "CODEX-4C3Q5R", "CODEX-5D4S6T",
+            "CODEX-6E5U7V", "CODEX-7F6W8X", "CODEX-8G7Y9Z", "CODEX-9H8A2B",
+            "CODEX-2J9C3D", "CODEX-3K2E4F", "CODEX-4L3G5H", "CODEX-5M4J6K",
+            "CODEX-6N5L7M", "CODEX-7P6N8P", "CODEX-8Q7Q9R", "CODEX-9R8S2T",
+            "CODEX-2S9U3V", "CODEX-3T2W4X", "CODEX-4U3Y5Z", "CODEX-5V4A6B",
+            "CODEX-6W5C7D", "CODEX-7X6E8F", "CODEX-8Y7G9H", "CODEX-9Z8J2K",
+            "CODEX-2A2L3M", "CODEX-3B3N4P", "CODEX-4C4Q5R", "CODEX-5D5S6T",
+            "CODEX-6E6U7V", "CODEX-7F7W8X", "CODEX-8G8Y9Z", "CODEX-9H9A2B",
+            "CODEX-2J2C3D", "CODEX-3K3E4F", "CODEX-4L4G5H", "CODEX-5M5J6K",
+            "CODEX-6N6L7M", "CODEX-7P7N8P", "CODEX-8Q8Q9R", "CODEX-9R9S2T",
+            "CODEX-2S2U3V", "CODEX-3T3W4X", "CODEX-4U4Y5Z", "CODEX-5V5A6B",
+            "CODEX-6W6C7D", "CODEX-7X7E8F", "CODEX-8Y8G9H", "CODEX-9Z9J2K",
+            "CODEX-A2B3C4", "CODEX-B3C4D5", "CODEX-C4D5E6", "CODEX-D5E6F7",
+            "CODEX-E6F7G8", "CODEX-F7G8H9", "CODEX-G8H9J2", "CODEX-H9J2K3",
+            "CODEX-J2K3L4", "CODEX-K3L4M5", "CODEX-L4M5N6", "CODEX-M5N6P7",
+            "CODEX-N6P7Q8", "CODEX-P7Q8R9", "CODEX-Q8R9S2", "CODEX-R9S2T3",
+            "CODEX-S2T3U4", "CODEX-T3U4V5", "CODEX-U4V5W6", "CODEX-V5W6X7",
+            "CODEX-W6X7Y8", "CODEX-X7Y8Z9", "CODEX-Y8Z9A2", "CODEX-Z9A2B3",
+            "CODEX-A3C4E5", "CODEX-B4D5F6", "CODEX-C5E6G7", "CODEX-D6F7H8",
+            "CODEX-E7G8J9", "CODEX-F8H9K2", "CODEX-G9J2L3", "CODEX-H2K3M4",
+            "CODEX-J3L4N5", "CODEX-K4M5P6", "CODEX-L5N6Q7", "CODEX-M6P7R8",
+            "CODEX-N7Q8S9", "CODEX-P8R9T2", "CODEX-Q9S2U3", "CODEX-R2T3V4",
+            "CODEX-S3U4W5", "CODEX-T4V5X6", "CODEX-U5W6Y7", "CODEX-V6X7Z8",
+            "CODEX-W7Y8A9", "CODEX-X8Z9B2", "CODEX-Y9A2C3", "CODEX-Z2B3D4",
+            "CODEX-A4D5G6", "CODEX-B5E6H7", "CODEX-C6F7J8", "CODEX-D7G8K9",
+            "CODEX-E8H9L2", "CODEX-F9J2M3", "CODEX-G2K3N4", "CODEX-H3L4P5",
+            "CODEX-J4M5Q6", "CODEX-K5N6R7", "CODEX-L6P7S8", "CODEX-M7Q8T9",
+            "CODEX-N8R9U2", "CODEX-P9S2V3", "CODEX-Q2T3W4", "CODEX-R3U4X5",
+            "CODEX-S4V5Y6", "CODEX-T5W6Z7", "CODEX-U6X7A8", "CODEX-V7Y8B9",
+            "CODEX-W8Z9C2", "CODEX-X9A2D3", "CODEX-Y2B3E4", "CODEX-Z3C4F5",
+            "CODEX-A5E6J7", "CODEX-B6F7K8", "CODEX-C7G8L9", "CODEX-D8H9M2",
+            "CODEX-E9J2N3", "CODEX-F2K3P4", "CODEX-G3L4Q5", "CODEX-H4M5R6",
+            "CODEX-J5N6S7", "CODEX-K6P7T8", "CODEX-L7Q8U9", "CODEX-M8R9V2",
+            "CODEX-N9S2W3", "CODEX-P2T3X4", "CODEX-Q3U4Y5", "CODEX-R4V5Z6",
+            "CODEX-S5W6A7", "CODEX-T6X7B8", "CODEX-U7Y8C9", "CODEX-V8Z9D2",
+            "CODEX-W9A2E3", "CODEX-X2B3F4", "CODEX-Y3C4G5", "CODEX-Z4D5H6",
+            "CODEX-A6F7L8", "CODEX-B7G8M9", "CODEX-C8H9N2", "CODEX-D9J2P3",
+            "CODEX-E2K3Q4", "CODEX-F3L4R5", "CODEX-G4M5S6", "CODEX-H5N6T7",
+            "CODEX-J6P7U8", "CODEX-K7Q8V9", "CODEX-L8R9W2", "CODEX-M9S2X3",
+            "CODEX-N2T3Y4", "CODEX-P3U4Z5", "CODEX-Q4V5A6", "CODEX-R5W6B7",
+            "CODEX-S6X7C8", "CODEX-T7Y8D9", "CODEX-U8Z9E2", "CODEX-V9A2F3",
+            "CODEX-W2B3G4", "CODEX-X3C4H5", "CODEX-Y4D5J6", "CODEX-Z5E6K7",
+            "CODEX-A7G8N9", "CODEX-B8H9P2", "CODEX-C9J2Q3", "CODEX-D2K3R4",
+            "CODEX-E3L4S5", "CODEX-F4M5T6", "CODEX-G5N6U7", "CODEX-H6P7V8",
+            "CODEX-J7Q8W9", "CODEX-K8R9X2", "CODEX-L9S2Y3", "CODEX-M2T3Z4",
+            "CODEX-N3U4A5", "CODEX-P4V5B6", "CODEX-Q5W6C7", "CODEX-R6X7D8",
+            "CODEX-S7Y8E9", "CODEX-T8Z9F2", "CODEX-U9A2G3", "CODEX-V2B3H4",
+            "CODEX-W3C4J5", "CODEX-X4D5K6", "CODEX-Y5E6L7", "CODEX-Z6F7M8",
+            "CODEX-A8H9Q2", "CODEX-B9J2R3", "CODEX-C2K3S4", "CODEX-D3L4T5",
+            "CODEX-E4M5U6", "CODEX-F5N6V7", "CODEX-G6P7W8", "CODEX-H7Q8X9",
+            "CODEX-J8R9Y2", "CODEX-K9S2Z3", "CODEX-L2T3A4", "CODEX-M3U4B5",
+            "CODEX-N4V5C6", "CODEX-P5W6D7", "CODEX-Q6X7E8", "CODEX-R7Y8F9",
+            "CODEX-S8Z9G2", "CODEX-T9A2H3", "CODEX-U2B3J4", "CODEX-V3C4K5",
+            "CODEX-W4D5L6", "CODEX-X5E6M7", "CODEX-Y6F7N8", "CODEX-Z7G8P9",
+            "CODEX-A9J2S3", "CODEX-B2K3T4", "CODEX-C3L4U5", "CODEX-D4M5V6",
+            "CODEX-E5N6W7", "CODEX-F6P7X8", "CODEX-G7Q8Y9", "CODEX-H8R9Z2",
+            "CODEX-J9S2A3", "CODEX-K2T3B4", "CODEX-L3U4C5", "CODEX-M4V5D6",
+            "CODEX-N5W6E7", "CODEX-P6X7F8", "CODEX-Q7Y8G9", "CODEX-R8Z9H2",
+            "CODEX-S9A2J3", "CODEX-T2B3K4", "CODEX-U3C4L5", "CODEX-V4D5M6",
+            "CODEX-W5E6N7", "CODEX-X6F7P8", "CODEX-Y7G8Q9", "CODEX-Z8H9R2",
+            "CODEX-A2K3U4", "CODEX-B3L4V5", "CODEX-C4M5W6", "CODEX-D5N6X7",
+            "CODEX-E6P7Y8", "CODEX-F7Q8Z9", "CODEX-G8R9A2", "CODEX-H9S2B3",
+            "CODEX-J2T3C4", "CODEX-K3U4D5", "CODEX-L4V5E6", "CODEX-M5W6F7",
+            "CODEX-N6X7G8", "CODEX-P7Y8H9", "CODEX-Q8Z9J2", "CODEX-R9A2K3",
+            "CODEX-S2B3L4", "CODEX-T3C4M5", "CODEX-U4D5N6", "CODEX-V5E6P7",
+            "CODEX-W6F7Q8", "CODEX-X7G8R9", "CODEX-Y8H9S2", "CODEX-Z9J2T3",
+            "CODEX-A3L4W5", "CODEX-B4M5X6", "CODEX-C5N6Y7", "CODEX-D6P7Z8",
+            "CODEX-E7Q8A9", "CODEX-F8R9B2", "CODEX-G9S2C3", "CODEX-H2T3D4",
+            "CODEX-J3U4E5", "CODEX-K4V5F6", "CODEX-L5W6G7", "CODEX-M6X7H8",
+            "CODEX-N7Y8J9", "CODEX-P8Z9K2", "CODEX-Q9A2L3", "CODEX-R2B3M4",
+            "CODEX-S3C4N5", "CODEX-T4D5P6", "CODEX-U5E6Q7", "CODEX-V6F7R8",
+            "CODEX-W7G8S9", "CODEX-X8H9T2", "CODEX-Y9J2U3", "CODEX-Z2K3V4",
+            "CODEX-A4M5Y6", "CODEX-B5N6Z7", "CODEX-C6P7A8", "CODEX-D7Q8B9",
+            "CODEX-E8R9C2", "CODEX-F9S2D3", "CODEX-G2T3E4", "CODEX-H3U4F5",
+            "CODEX-J4V5G6", "CODEX-K5W6H7", "CODEX-L6X7J8", "CODEX-M7Y8K9",
+            "CODEX-N8Z9L2", "CODEX-P9A2M3", "CODEX-Q2B3N4", "CODEX-R3C4P5",
+            "CODEX-S4D5Q6", "CODEX-T5E6R7", "CODEX-U6F7S8", "CODEX-V7G8T9",
+            "CODEX-W8H9U2", "CODEX-X9J2V3", "CODEX-Y2K3W4", "CODEX-Z3L4X5",
+            "CODEX-A5N6A7", "CODEX-B6P7B8", "CODEX-C7Q8C9", "CODEX-D8R9D2",
+            "CODEX-E9S2E3", "CODEX-F2T3F4", "CODEX-G3U4G5", "CODEX-H4V5H6",
+            "CODEX-J5W6J7", "CODEX-K6X7K8", "CODEX-L7Y8L9", "CODEX-M8Z9M2",
+            "CODEX-N9A2N3", "CODEX-P2B3P4", "CODEX-Q3C4Q5", "CODEX-R4D5R6",
+            "CODEX-S5E6S7", "CODEX-T6F7T8", "CODEX-U7G8U9", "CODEX-V8H9V2",
+            "CODEX-W9J2W3", "CODEX-X2K3X4", "CODEX-Y3L4Y5", "CODEX-Z4M5Z6",
+            "CODEX-A6P7C8", "CODEX-B7Q8D9", "CODEX-C8R9E2", "CODEX-D9S2F3",
+            "CODEX-E2T3G4", "CODEX-F3U4H5", "CODEX-G4V5J6", "CODEX-H5W6K7",
+            "CODEX-J6X7L8", "CODEX-K7Y8M9", "CODEX-L8Z9N2", "CODEX-M9A2P3",
+            "CODEX-N2B3Q4", "CODEX-P3C4R5", "CODEX-Q4D5S6", "CODEX-R5E6T7",
+            "CODEX-S6F7U8", "CODEX-T7G8V9", "CODEX-U8H9W2", "CODEX-V9J2X3",
+            "CODEX-W2K3Y4", "CODEX-X3L4Z5", "CODEX-Y4M5A6", "CODEX-Z5N6B7",
+            "CODEX-A7Q8E9", "CODEX-B8R9F2", "CODEX-C9S2G3", "CODEX-D2T3H4",
+            "CODEX-E3U4J5", "CODEX-F4V5K6", "CODEX-G5W6L7", "CODEX-H6X7M8",
+            "CODEX-J7Y8N9", "CODEX-K8Z9P2", "CODEX-L9A2Q3", "CODEX-M2B3R4",
+            "CODEX-N3C4S5", "CODEX-P4D5T6", "CODEX-Q5E6U7", "CODEX-R6F7V8",
+            "CODEX-S7G8W9", "CODEX-T8H9X2", "CODEX-U9J2Y3", "CODEX-V2K3Z4",
+            "CODEX-W3L4A5", "CODEX-X4M5B6", "CODEX-Y5N6C7", "CODEX-Z6P7D8",
+            "CODEX-A8R9G2", "CODEX-B9S2H3", "CODEX-C2T3J4", "CODEX-D3U4K5",
+            "CODEX-E4V5L6", "CODEX-F5W6M7", "CODEX-G6X7N8", "CODEX-H7Y8P9",
+            "CODEX-J8Z9Q2", "CODEX-K9A2R3", "CODEX-L2B3S4", "CODEX-M3C4T5",
+            "CODEX-N4D5U6", "CODEX-P5E6V7", "CODEX-Q6F7W8", "CODEX-R7G8X9",
+            "CODEX-S8H9Y2", "CODEX-T9J2Z3", "CODEX-U2K3A4", "CODEX-V3L4B5",
+            "CODEX-W4M5C6", "CODEX-X5N6D7", "CODEX-Y6P7E8", "CODEX-Z7Q8F9",
+            "CODEX-A9S2J3", "CODEX-B2T3K4", "CODEX-C3U4L5", "CODEX-D4V5M6",
+            "CODEX-E5W6N7", "CODEX-F6X7P8", "CODEX-G7Y8Q9", "CODEX-H8Z9R2",
+            "CODEX-J9A2S3", "CODEX-K2B3T4", "CODEX-L3C4U5", "CODEX-M4D5V6",
+            "CODEX-N5E6W7", "CODEX-P6X7F8", "CODEX-Q7Y8G9", "CODEX-R8Z9H2",
+            "CODEX-S9A2J3", "CODEX-T2B3K4", "CODEX-U3C4L5", "CODEX-V4D5M6",
+            "CODEX-W5E6N7", "CODEX-X6F7P8", "CODEX-Y7G8Q9", "CODEX-Z8H9R2",
+            "CODEX-A2T3L4", "CODEX-B3U4M5", "CODEX-C4V5N6", "CODEX-D5W6P7",
+            "CODEX-E6X7Q8", "CODEX-F7Y8R9", "CODEX-G8Z9S2", "CODEX-H9A2T3",
+            "CODEX-J2B3U4", "CODEX-K3C4V5", "CODEX-L4D5W6", "CODEX-M5E6X7",
+            "CODEX-N6F7Y8", "CODEX-P7G8Z9", "CODEX-Q8H9A2", "CODEX-R9J2B3",
+            "CODEX-S2K3C4", "CODEX-T3L4D5", "CODEX-U4M5E6", "CODEX-V5N6F7",
+            "CODEX-W6P7G8", "CODEX-X7Q8H9", "CODEX-Y8R9J2", "CODEX-Z9S2K3",
+            "CODEX-A3U4N5", "CODEX-B4V5P6", "CODEX-C5W6Q7", "CODEX-D6X7R8",
+            "CODEX-E7Y8S9", "CODEX-F8Z9T2", "CODEX-G9A2U3", "CODEX-H2B3V4",
+            "CODEX-J3C4W5", "CODEX-K4D5X6", "CODEX-L5E6Y7", "CODEX-M6F7Z8",
+            "CODEX-N7G8A9", "CODEX-P8H9B2", "CODEX-Q9J2C3", "CODEX-R2K3D4",
+            "CODEX-S3L4E5", "CODEX-T4M5F6", "CODEX-U5N6G7", "CODEX-V6P7H8",
+            "CODEX-W7Q8J9", "CODEX-X8R9K2", "CODEX-Y9S2L3", "CODEX-Z2T3M4",
+            "CODEX-A4V5Q6", "CODEX-B5W6R7", "CODEX-C6X7S8", "CODEX-D7Y8T9",
+            "CODEX-E8Z9U2", "CODEX-F9A2V3", "CODEX-G2B3W4", "CODEX-H3C4X5",
+            "CODEX-J4D5Y6", "CODEX-K5E6Z7", "CODEX-L6F7A8", "CODEX-M7G8B9",
+            "CODEX-N8H9C2", "CODEX-P9J2D3", "CODEX-Q2K3E4", "CODEX-R3L4F5",
+            "CODEX-S4M5G6", "CODEX-T5N6H7", "CODEX-U6P7J8", "CODEX-V7Q8K9",
+            "CODEX-W8R9L2", "CODEX-X9S2M3", "CODEX-Y2T3N4", "CODEX-Z3U4P5",
+            "CODEX-A5W6S7", "CODEX-B6X7T8", "CODEX-C7Y8U9", "CODEX-D8Z9V2",
+            "CODEX-E9A2W3", "CODEX-F2B3X4", "CODEX-G3C4Y5", "CODEX-H4D5Z6",
+            "CODEX-J5E6A7", "CODEX-K6F7B8", "CODEX-L7G8C9", "CODEX-M8H9D2",
+            "CODEX-N9J2E3", "CODEX-P2K3F4", "CODEX-Q3L4G5", "CODEX-R4M5H6",
+            "CODEX-S5N6J7", "CODEX-T6P7K8", "CODEX-U7Q8L9", "CODEX-V8R9M2",
+            "CODEX-W9S2N3", "CODEX-X2T3P4", "CODEX-Y3U4Q5", "CODEX-Z4V5R6",
+            "CODEX-A6X7U8", "CODEX-B7Y8V9", "CODEX-C8Z9W2", "CODEX-D9A2X3",
+            "CODEX-E2B3Y4", "CODEX-F3C4Z5", "CODEX-G4D5A6", "CODEX-H5E6B7",
+            "CODEX-J6F7C8", "CODEX-K7G8D9", "CODEX-L8H9E2", "CODEX-M9J2F3",
+            "CODEX-N2K3G4", "CODEX-P3L4H5", "CODEX-Q4M5J6", "CODEX-R5N6K7",
+            "CODEX-S6P7L8", "CODEX-T7Q8M9", "CODEX-U8R9N2", "CODEX-V9S2P3",
+            "CODEX-W2T3Q4", "CODEX-X3U4R5", "CODEX-Y4V5S6", "CODEX-Z5W6T7",
+            "CODEX-A7Y8W9", "CODEX-B8Z9X2", "CODEX-C9A2Y3", "CODEX-D2B3Z4",
+            "CODEX-E3C4A5", "CODEX-F4D5B6", "CODEX-G5E6C7", "CODEX-H6F7D8",
+            "CODEX-J7G8E9", "CODEX-K8H9F2", "CODEX-L9J2G3", "CODEX-M2K3H4",
+            "CODEX-N3L4J5", "CODEX-P4M5K6", "CODEX-Q5N6L7", "CODEX-R6P7M8",
+            "CODEX-S7Q8N9", "CODEX-T8R9P2", "CODEX-U9S2Q3", "CODEX-V2T3R4",
+            "CODEX-W3U4S5", "CODEX-X4V5T6", "CODEX-Y5W6U7", "CODEX-Z6X7V8",
+            "CODEX-A8Z9Y2", "CODEX-B9A2Z3", "CODEX-C2B3A4", "CODEX-D3C4B5",
+            "CODEX-E4D5C6", "CODEX-F5E6D7", "CODEX-G6F7E8", "CODEX-H7G8F9",
+            "CODEX-J8H9G2", "CODEX-K9J2H3", "CODEX-L2K3J4", "CODEX-M3L4K5",
+            "CODEX-N4M5L6", "CODEX-P5N6M7", "CODEX-Q6P7N8", "CODEX-R7Q8P9",
+            "CODEX-S8R9Q2", "CODEX-T9S2R3", "CODEX-U2T3S4", "CODEX-V3U4T5",
+            "CODEX-W4V5U6", "CODEX-X5W6V7", "CODEX-Y6X7W8", "CODEX-Z7Y8X9",
+            "CODEX-9A2B3C", "CODEX-8B3C4D", "CODEX-7C4D5E", "CODEX-6D5E6F",
+            "CODEX-5E6F7G", "CODEX-4F7G8H", "CODEX-3G8H9J", "CODEX-2H9J2K",
+            "CODEX-9J2K3L", "CODEX-8K3L4M", "CODEX-7L4M5N", "CODEX-6M5N6P",
+            "CODEX-5N6P7Q", "CODEX-4P7Q8R", "CODEX-3Q8R9S", "CODEX-2R9S2T",
+            "CODEX-9S2T3U", "CODEX-8T3U4V", "CODEX-7U4V5W", "CODEX-6V5W6X",
+            "CODEX-5W6X7Y", "CODEX-4X7Y8Z", "CODEX-3Y8Z9A", "CODEX-2Z9A2B",
+            "CODEX-9A3C4E", "CODEX-8B4D5F", "CODEX-7C5E6G", "CODEX-6D6F7H",
+            "CODEX-5E7G8J", "CODEX-4F8H9K", "CODEX-3G9J2L", "CODEX-2H2K3M",
+            "CODEX-9J3L4N", "CODEX-8K4M5P", "CODEX-7L5N6Q", "CODEX-6M6P7R",
+            "CODEX-5N7Q8S", "CODEX-4P8R9T", "CODEX-3Q9S2U", "CODEX-2R2T3V",
+            "CODEX-9S3U4W", "CODEX-8T4V5X", "CODEX-7U5W6Y", "CODEX-6V6X7Z",
+            "CODEX-5W7Y8A", "CODEX-4X8Z9B", "CODEX-3Y9A2C", "CODEX-2Z2B3D",
+            "CODEX-9A4D5G", "CODEX-8B5E6H", "CODEX-7C6F7J", "CODEX-6D7G8K",
+            "CODEX-5E8H9L", "CODEX-4F9J2M", "CODEX-3G2K3N", "CODEX-2H3L4P",
+            "CODEX-9J4M5Q", "CODEX-8K5N6R", "CODEX-7L6P7S", "CODEX-6M7Q8T",
+            "CODEX-5N8R9U", "CODEX-4P9S2V", "CODEX-3Q2T3W", "CODEX-2R3U4X",
+            "CODEX-9S4V5Y", "CODEX-8T5W6Z", "CODEX-7U6X7A", "CODEX-6V7Y8B",
+            "CODEX-5W8Z9C", "CODEX-4X9A2D", "CODEX-3Y2B3E", "CODEX-2Z3C4F",
+            "CODEX-9A5E6J", "CODEX-8B6F7K", "CODEX-7C7G8L", "CODEX-6D8H9M",
+            "CODEX-5E9J2N", "CODEX-4F2K3P", "CODEX-3G3L4Q", "CODEX-2H4M5R",
+            "CODEX-9J5N6S", "CODEX-8K6P7T", "CODEX-7L7Q8U", "CODEX-6M8R9V",
+            "CODEX-5N9S2W", "CODEX-4P2T3X", "CODEX-3Q3U4Y", "CODEX-2R4V5Z",
+            "CODEX-9S5W6A", "CODEX-8T6X7B", "CODEX-7U7Y8C", "CODEX-6V8Z9D",
+            "CODEX-5W9A2E", "CODEX-4X2B3F", "CODEX-3Y3C4G", "CODEX-2Z4D5H",
+            "CODEX-9A6F7L", "CODEX-8B7G8M", "CODEX-7C8H9N", "CODEX-6D9J2P",
+            "CODEX-5E2K3Q", "CODEX-4F3L4R", "CODEX-3G4M5S", "CODEX-2H5N6T",
+            "CODEX-9J6P7U", "CODEX-8K7Q8V", "CODEX-7L8R9W", "CODEX-6M9S2X",
+            "CODEX-5N2T3Y", "CODEX-4P3U4Z", "CODEX-3Q4V5A", "CODEX-2R5W6B",
+            "CODEX-9S6X7C", "CODEX-8T7Y8D", "CODEX-7U8Z9E", "CODEX-6V9A2F",
+            "CODEX-5W2B3G", "CODEX-4X3C4H", "CODEX-3Y4D5J", "CODEX-2Z5E6K",
+            "CODEX-9A7G8N", "CODEX-8B8H9P", "CODEX-7C9J2Q", "CODEX-6D2K3R",
+            "CODEX-5E3L4S", "CODEX-4F4M5T", "CODEX-3G5N6U", "CODEX-2H6P7V",
+            "CODEX-9J7Q8W", "CODEX-8K8R9X", "CODEX-7L9S2Y", "CODEX-6M2T3Z",
+            "CODEX-5N3U4A", "CODEX-4P4V5B", "CODEX-3Q5W6C", "CODEX-2R6X7D",
+            "CODEX-9S7Y8E", "CODEX-8T8Z9F", "CODEX-7U9A2G", "CODEX-6V2B3H",
+            "CODEX-5W3C4J", "CODEX-4X4D5K", "CODEX-3Y5E6L", "CODEX-2Z6F7M",
+            "CODEX-9A8H9Q", "CODEX-8B9J2R", "CODEX-7C2K3S", "CODEX-6D3L4T",
+            "CODEX-5E4M5U", "CODEX-4F5N6V", "CODEX-3G6P7W", "CODEX-2H7Q8X",
+            "CODEX-9J8R9Y", "CODEX-8K9S2Z", "CODEX-7L2T3A", "CODEX-6M3U4B",
+            "CODEX-5N4V5C", "CODEX-4P5W6D", "CODEX-3Q6X7E", "CODEX-2R7Y8F",
+            "CODEX-9S8Z9G", "CODEX-8T9A2H", "CODEX-7U2B3J", "CODEX-6V3C4K",
+            "CODEX-5W4D5L", "CODEX-4X5E6M", "CODEX-3Y6F7N", "CODEX-2Z7G8P",
+            "CODEX-9A9J2S", "CODEX-8B2K3T", "CODEX-7C3L4U", "CODEX-6D4M5V",
+            "CODEX-5E5N6W", "CODEX-4F6P7X", "CODEX-3G7Q8Y", "CODEX-2H8R9Z",
+            "CODEX-9J9S2A", "CODEX-8K2T3B", "CODEX-7L3U4C", "CODEX-6M4V5D",
+            "CODEX-5N5W6E", "CODEX-4P6X7F", "CODEX-3Q7Y8G", "CODEX-2R8Z9H",
+            "CODEX-9S9A2J", "CODEX-8T2B3K", "CODEX-7U3C4L", "CODEX-6V4D5M",
+            "CODEX-5W5E6N", "CODEX-4X6F7P", "CODEX-3Y7G8Q", "CODEX-2Z8H9R",
+            "CODEX-9A2K3U", "CODEX-8B3L4V", "CODEX-7C4M5W", "CODEX-6D5N6X",
+            "CODEX-5E6P7Y", "CODEX-4F7Q8Z", "CODEX-3G8R9A", "CODEX-2H9S2B",
+            "CODEX-9J2T3C", "CODEX-8K3U4D", "CODEX-7L4V5E", "CODEX-6M5W6F",
+            "CODEX-5N6X7G", "CODEX-4P7Y8H", "CODEX-3Q8Z9J", "CODEX-2R9A2K",
+            "CODEX-9S2B3L", "CODEX-8T3C4M", "CODEX-7U4D5N", "CODEX-6V5E6P",
+            "CODEX-5W6F7Q", "CODEX-4X7G8R", "CODEX-3Y8H9S", "CODEX-2Z9J2T",
+            "CODEX-9A3L4W", "CODEX-8B4M5X", "CODEX-7C5N6Y", "CODEX-6D6P7Z",
+            "CODEX-5E7Q8A", "CODEX-4F8R9B", "CODEX-3G9S2C", "CODEX-2H2T3D",
+            "CODEX-9J3U4E", "CODEX-8K4V5F", "CODEX-7L5W6G", "CODEX-6M6X7H",
+            "CODEX-5N7Y8J", "CODEX-4P8Z9K", "CODEX-3Q9A2L", "CODEX-2R2B3M",
+            "CODEX-9S3C4N", "CODEX-8T4D5P", "CODEX-7U5E6Q", "CODEX-6V6F7R",
+            "CODEX-5W7G8S", "CODEX-4X8H9T", "CODEX-3Y9J2U", "CODEX-2Z2K3V",
+            "CODEX-9A4M5Y", "CODEX-8B5N6Z", "CODEX-7C6P7A", "CODEX-6D7Q8B",
+            "CODEX-5E8R9C", "CODEX-4F9S2D", "CODEX-3G2T3E", "CODEX-2H3U4F",
+            "CODEX-9J4V5G", "CODEX-8K5W6H", "CODEX-7L6X7J", "CODEX-6M7Y8K",
+            "CODEX-5N8Z9L", "CODEX-4P9A2M", "CODEX-3Q2B3N", "CODEX-2R3C4P",
+            "CODEX-9S4D5Q", "CODEX-8T5E6R", "CODEX-7U6F7S", "CODEX-6V7G8T",
+            "CODEX-5W8H9U", "CODEX-4X9J2V", "CODEX-3Y2K3W", "CODEX-2Z3L4X",
+            "CODEX-9A5N6A", "CODEX-8B6P7B", "CODEX-7C7Q8C", "CODEX-6D8R9D",
+            "CODEX-5E9S2E", "CODEX-4F2T3F", "CODEX-3G3U4G", "CODEX-2H4V5H",
+            "CODEX-9J5W6J", "CODEX-8K6X7K", "CODEX-7L7Y8L", "CODEX-6M8Z9M",
+            "CODEX-5N9A2N", "CODEX-4P2B3P", "CODEX-3Q3C4Q", "CODEX-2R4D5R",
+            "CODEX-9S5E6S", "CODEX-8T6F7T", "CODEX-7U7G8U", "CODEX-6V8H9V",
+            "CODEX-5W9J2W", "CODEX-4X2K3X", "CODEX-3Y3L4Y", "CODEX-2Z4M5Z",
+            "CODEX-9A6P7C", "CODEX-8B7Q8D", "CODEX-7C8R9E", "CODEX-6D9S2F",
+            "CODEX-5E2T3G", "CODEX-4F3U4H", "CODEX-3G4V5J", "CODEX-2H5W6K",
+            "CODEX-9J6X7L", "CODEX-8K7Y8M", "CODEX-7L8Z9N", "CODEX-6M9A2P",
+            "CODEX-5N2B3Q", "CODEX-4P3C4R", "CODEX-3Q4D5S", "CODEX-2R5E6T",
+            "CODEX-9S6F7U", "CODEX-8T7G8V", "CODEX-7U8H9W", "CODEX-6V9J2X",
+            "CODEX-5W2K3Y", "CODEX-4X3L4Z", "CODEX-3Y4M5A", "CODEX-2Z5N6B",
+            "CODEX-9A7Q8E", "CODEX-8B8R9F", "CODEX-7C9S2G", "CODEX-6D2T3H",
+            "CODEX-5E3U4J", "CODEX-4F4V5K", "CODEX-3G5W6L", "CODEX-2H6X7M",
+            "CODEX-9J7Y8N", "CODEX-8K8Z9P", "CODEX-7L9A2Q", "CODEX-6M2B3R",
+            "CODEX-5N3C4S", "CODEX-4P4D5T", "CODEX-3Q5E6U", "CODEX-2R6F7V",
+            "CODEX-9S7G8W", "CODEX-8T8H9X", "CODEX-7U9J2Y", "CODEX-6V2K3Z",
+            "CODEX-5W3L4A", "CODEX-4X4M5B", "CODEX-3Y5N6C", "CODEX-2Z6P7D",
+            "CODEX-9A8R9G", "CODEX-8B9S2H", "CODEX-7C2T3J", "CODEX-6D3U4K",
+            "CODEX-5E4V5L", "CODEX-4F5W6M", "CODEX-3G6X7N", "CODEX-2H7Y8P",
+            "CODEX-9J8Z9Q", "CODEX-8K9A2R", "CODEX-7L2B3S", "CODEX-6M3C4T",
+            "CODEX-5N4D5U", "CODEX-4P5E6V", "CODEX-3Q6F7W", "CODEX-2R7G8X",
+            "CODEX-9S8H9Y", "CODEX-8T9J2Z", "CODEX-7U2K3A", "CODEX-6V3L4B",
+            "CODEX-5W4M5C", "CODEX-4X5N6D", "CODEX-3Y6P7E", "CODEX-2Z7Q8F",
+            "CODEX-9A9S2J", "CODEX-8B2T3K", "CODEX-7C3U4L", "CODEX-6D4V5M",
+            "CODEX-5E5W6N", "CODEX-4F6X7P", "CODEX-3G7Y8Q", "CODEX-2H8Z9R",
+            "CODEX-9J9A2S", "CODEX-8K2B3T", "CODEX-7L3C4U", "CODEX-6M4D5V",
+            "CODEX-5N5E6W", "CODEX-4P6F7X", "CODEX-3Q7G8Y", "CODEX-2R8H9Z",
+            "CODEX-9S9J2A", "CODEX-8T2K3B", "CODEX-7U3L4C", "CODEX-6V4M5D",
+            "CODEX-5W5N6E", "CODEX-4X6P7F", "CODEX-3Y7Q8G", "CODEX-2Z8R9H",
+            "CODEX-9A2T3L", "CODEX-8B3U4M", "CODEX-7C4V5N", "CODEX-6D5W6P",
+            "CODEX-5E6X7Q", "CODEX-4F7Y8R", "CODEX-3G8Z9S", "CODEX-2H9A2T",
+            "CODEX-9J2B3U", "CODEX-8K3C4V", "CODEX-7L4D5W", "CODEX-6M5E6X",
+            "CODEX-5N6F7Y", "CODEX-4P7G8Z", "CODEX-3Q8H9A", "CODEX-2R9J2B",
+            "CODEX-9S2K3C", "CODEX-8T3L4D", "CODEX-7U4M5E", "CODEX-6V5N6F",
+            "CODEX-5W6P7G", "CODEX-4X7Q8H", "CODEX-3Y8R9J", "CODEX-2Z9S2K",
+            "CODEX-9A3U4N", "CODEX-8B4V5P", "CODEX-7C5W6Q", "CODEX-6D6X7R",
+            "CODEX-5E7Y8S", "CODEX-4F8Z9T", "CODEX-3G9A2U", "CODEX-2H2B3V",
+            "CODEX-9J3C4W", "CODEX-8K4D5X", "CODEX-7L5E6Y", "CODEX-6M6F7Z",
+            "CODEX-5N7G8A", "CODEX-4P8H9B", "CODEX-3Q9J2C", "CODEX-2R2K3D",
+            "CODEX-9S3L4E", "CODEX-8T4M5F", "CODEX-7U5N6G", "CODEX-6V6P7H",
+            "CODEX-5W7Q8J", "CODEX-4X8R9K", "CODEX-3Y9S2L", "CODEX-2Z2T3M",
+            "CODEX-9A4V5Q", "CODEX-8B5W6R", "CODEX-7C6X7S", "CODEX-6D7Y8T",
+            "CODEX-5E8Z9U", "CODEX-4F9A2V", "CODEX-3G2B3W", "CODEX-2H3C4X",
+            "CODEX-9J4D5Y", "CODEX-8K5E6Z", "CODEX-7L6F7A", "CODEX-6M7G8B",
+            "CODEX-5N8H9C", "CODEX-4P9J2D", "CODEX-3Q2K3E", "CODEX-2R3L4F",
+            "CODEX-9S4M5G", "CODEX-8T5N6H", "CODEX-7U6P7J", "CODEX-6V7Q8K",
+            "CODEX-5W8R9L", "CODEX-4X9S2M", "CODEX-3Y2T3N", "CODEX-2Z3U4P",
+            "CODEX-9A5W6S", "CODEX-8B6X7T", "CODEX-7C7Y8U", "CODEX-6D8Z9V",
+            "CODEX-5E9A2W", "CODEX-4F2B3X", "CODEX-3G3C4Y", "CODEX-2H4D5Z",
+            "CODEX-9J5E6A", "CODEX-8K6F7B", "CODEX-7L7G8C", "CODEX-6M8H9D",
+            "CODEX-5N9J2E", "CODEX-4P2K3F", "CODEX-3Q3L4G", "CODEX-2R4M5H",
+            "CODEX-9S5N6J", "CODEX-8T6P7K", "CODEX-7U7Q8L", "CODEX-6V8R9M",
+            "CODEX-5W9S2N", "CODEX-4X2T3P", "CODEX-3Y3U4Q", "CODEX-2Z4V5R",
+            "CODEX-9A6X7U", "CODEX-8B7Y8V", "CODEX-7C8Z9W", "CODEX-6D9A2X",
+            "CODEX-5E2B3Y", "CODEX-4F3C4Z", "CODEX-3G4D5A", "CODEX-2H5E6B",
+            "CODEX-9J6F7C", "CODEX-8K7G8D", "CODEX-7L8H9E", "CODEX-6M9J2F",
+            "CODEX-5N2K3G", "CODEX-4P3L4H", "CODEX-3Q4M5J", "CODEX-2R5N6K",
+            "CODEX-9S6P7L", "CODEX-8T7Q8M", "CODEX-7U8R9N", "CODEX-6V9S2P",
+            "CODEX-5W2T3Q", "CODEX-4X3U4R", "CODEX-3Y4V5S", "CODEX-2Z5W6T",
+            "CODEX-9A7Y8W", "CODEX-8B8Z9X", "CODEX-7C9A2Y", "CODEX-6D2B3Z",
+            "CODEX-5E3C4A", "CODEX-4F4D5B", "CODEX-3G5E6C", "CODEX-2H6F7D",
+            "CODEX-9J7G8E", "CODEX-8K8H9F", "CODEX-7L9J2G", "CODEX-6M2K3H",
+            "CODEX-5N3L4J", "CODEX-4P4M5K", "CODEX-3Q5N6L", "CODEX-2R6P7M",
+            "CODEX-9S7Q8N", "CODEX-8T8R9P", "CODEX-7U9S2Q", "CODEX-6V2T3R",
+            "CODEX-5W3U4S", "CODEX-4X4V5T", "CODEX-3Y5W6U", "CODEX-2Z6X7V",
+            "CODEX-9A8Z9Y", "CODEX-8B9A2Z", "CODEX-7C2B3A", "CODEX-6D3C4B",
+            "CODEX-5E4D5C", "CODEX-4F5E6D", "CODEX-3G6F7E", "CODEX-2H7G8F",
+            "CODEX-9J8H9G", "CODEX-8K9J2H", "CODEX-7L2K3J", "CODEX-6M3L4K",
+            "CODEX-5N4M5L", "CODEX-4P5N6M", "CODEX-3Q6P7N", "CODEX-2R7Q8P",
+            "CODEX-9S8R9Q", "CODEX-8T9S2R", "CODEX-7U2T3S", "CODEX-6V3U4T",
+            "CODEX-5W4V5U", "CODEX-4X5W6V", "CODEX-3Y6X7W", "CODEX-2Z7Y8X",
+            "CODEX-X1A2B3", "CODEX-X2B3C4", "CODEX-X3C4D5", "CODEX-X4D5E6",
+            "CODEX-X5E6F7", "CODEX-X6F7G8", "CODEX-X7G8H9", "CODEX-X8H9J2",
+            "CODEX-X9J2K3", "CODEX-Y1K3L4", "CODEX-Y2L4M5", "CODEX-Y3M5N6",
+            "CODEX-Y4N6P7", "CODEX-Y5P7Q8", "CODEX-Y6Q8R9", "CODEX-Y7R9S2",
+            "CODEX-Y8S2T3", "CODEX-Y9T3U4", "CODEX-Z1U4V5", "CODEX-Z2V5W6",
+            "CODEX-Z3W6X7", "CODEX-Z4X7Y8", "CODEX-Z5Y8Z9", "CODEX-Z6Z9A2",
+            "CODEX-Z7A2B3", "CODEX-Z8B3C4", "CODEX-Z9C4D5", "CODEX-W1D5E6",
+            "CODEX-W2E6F7", "CODEX-W3F7G8", "CODEX-W4G8H9", "CODEX-W5H9J2",
+            "CODEX-W6J2K3", "CODEX-W7K3L4", "CODEX-W8L4M5", "CODEX-W9M5N6",
+            "CODEX-V1N6P7", "CODEX-V2P7Q8", "CODEX-V3Q8R9", "CODEX-V4R9S2",
+            "CODEX-V5S2T3", "CODEX-V6T3U4", "CODEX-V7U4V5", "CODEX-V8V5W6",
+            "CODEX-V9W6X7", "CODEX-U1X7Y8", "CODEX-U2Y8Z9", "CODEX-U3Z9A2",
+            "CODEX-U4A2B3", "CODEX-U5B3C4", "CODEX-U6C4D5", "CODEX-U7D5E6",
+            "CODEX-U8E6F7", "CODEX-U9F7G8", "CODEX-T1G8H9", "CODEX-T2H9J2",
+            "CODEX-T3J2K3", "CODEX-T4K3L4", "CODEX-T5L4M5", "CODEX-T6M5N6",
+            "CODEX-T7N6P7", "CODEX-T8P7Q8", "CODEX-T9Q8R9", "CODEX-S1R9S2",
+            "CODEX-S2S2T3", "CODEX-S3T3U4", "CODEX-S4U4V5", "CODEX-S5V5W6",
+            "CODEX-S6W6X7", "CODEX-S7X7Y8", "CODEX-S8Y8Z9", "CODEX-S9Z9A2",
+            "CODEX-R1A2B3", "CODEX-R2B3C4", "CODEX-R3C4D5", "CODEX-R4D5E6",
+            "CODEX-R5E6F7", "CODEX-R6F7G8", "CODEX-R7G8H9", "CODEX-R8H9J2",
+            "CODEX-R9J2K3", "CODEX-Q1K3L4", "CODEX-Q2L4M5", "CODEX-Q3M5N6",
+            "CODEX-Q4N6P7", "CODEX-Q5P7Q8", "CODEX-Q6Q8R9", "CODEX-Q7R9S2",
+            "CODEX-Q8S2T3", "CODEX-Q9T3U4", "CODEX-P1U4V5", "CODEX-P2V5W6",
+            "CODEX-P3W6X7", "CODEX-P4X7Y8", "CODEX-P5Y8Z9", "CODEX-P6Z9A2",
+            "CODEX-P7A2B3", "CODEX-P8B3C4", "CODEX-P9C4D5", "CODEX-N1D5E6",
+            "CODEX-N2E6F7", "CODEX-N3F7G8", "CODEX-N4G8H9", "CODEX-N5H9J2",
+            "CODEX-N6J2K3", "CODEX-N7K3L4", "CODEX-N8L4M5", "CODEX-N9M5N6",
+            "CODEX-M1N6P7", "CODEX-M2P7Q8", "CODEX-M3Q8R9", "CODEX-M4R9S2",
+            "CODEX-M5S2T3", "CODEX-M6T3U4", "CODEX-M7U4V5", "CODEX-M8V5W6",
+            "CODEX-M9W6X7", "CODEX-L1X7Y8", "CODEX-L2Y8Z9", "CODEX-L3Z9A2",
+            "CODEX-L4A2B3", "CODEX-L5B3C4", "CODEX-L6C4D5", "CODEX-L7D5E6",
+            "CODEX-L8E6F7", "CODEX-L9F7G8", "CODEX-K1G8H9", "CODEX-K2H9J2",
+            "CODEX-K3J2K3", "CODEX-K4K3L4", "CODEX-K5L4M5", "CODEX-K6M5N6",
+            "CODEX-K7N6P7", "CODEX-K8P7Q8", "CODEX-K9Q8R9", "CODEX-J1R9S2",
+            "CODEX-J2S2T3", "CODEX-J3T3U4", "CODEX-J4U4V5", "CODEX-J5V5W6",
+            "CODEX-J6W6X7", "CODEX-J7X7Y8", "CODEX-J8Y8Z9", "CODEX-J9Z9A2",
+            "CODEX-H1A2B3", "CODEX-H2B3C4", "CODEX-H3C4D5", "CODEX-H4D5E6",
+            "CODEX-H5E6F7", "CODEX-H6F7G8", "CODEX-H7G8H9", "CODEX-H8H9J2",
+            "CODEX-H9J2K3", "CODEX-G1K3L4", "CODEX-G2L4M5", "CODEX-G3M5N6",
+            "CODEX-G4N6P7", "CODEX-G5P7Q8", "CODEX-G6Q8R9", "CODEX-G7R9S2",
+            "CODEX-G8S2T3", "CODEX-G9T3U4", "CODEX-F1U4V5", "CODEX-F2V5W6",
+            "CODEX-F3W6X7", "CODEX-F4X7Y8", "CODEX-F5Y8Z9", "CODEX-F6Z9A2",
+            "CODEX-F7A2B3", "CODEX-F8B3C4", "CODEX-F9C4D5", "CODEX-E1D5E6",
+            "CODEX-E2E6F7", "CODEX-E3F7G8", "CODEX-E4G8H9", "CODEX-E5H9J2",
+            "CODEX-E6J2K3", "CODEX-E7K3L4", "CODEX-E8L4M5", "CODEX-E9M5N6",
+            "CODEX-D1N6P7", "CODEX-D2P7Q8", "CODEX-D3Q8R9", "CODEX-D4R9S2",
+            "CODEX-D5S2T3", "CODEX-D6T3U4", "CODEX-D7U4V5", "CODEX-D8V5W6",
+            "CODEX-D9W6X7", "CODEX-C1X7Y8", "CODEX-C2Y8Z9", "CODEX-C3Z9A2",
+            "CODEX-C4A2B3", "CODEX-C5B3C4", "CODEX-C6C4D5", "CODEX-C7D5E6",
+            "CODEX-C8E6F7", "CODEX-C9F7G8", "CODEX-B1G8H9", "CODEX-B2H9J2",
+            "CODEX-B3J2K3", "CODEX-B4K3L4", "CODEX-B5L4M5", "CODEX-B6M5N6",
+            "CODEX-B7N6P7", "CODEX-B8P7Q8", "CODEX-B9Q8R9", "CODEX-A1R9S2",
+            "CODEX-A2S2T3", "CODEX-A3T3U4", "CODEX-A4U4V5", "CODEX-A5V5W6",
+            "CODEX-A6W6X7", "CODEX-A7X7Y8", "CODEX-A8Y8Z9", "CODEX-A9Z9A2"
+        ];
+
+        function buildThousandPaidCodesSet() {
+            const set = new Set();
+            for (const item of PAID_CODES_LIST) {
+                if (set.size >= 1000) break;
+                const clean = String(item || "").trim().toUpperCase();
+                if (clean) set.add(clean);
+            }
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let n = 1;
+            while (set.size < 1000) {
+                const c1 = chars[(n * 7 + set.size * 3) % chars.length];
+                const c2 = chars[(n * 11 + set.size * 5) % chars.length];
+                const c3 = chars[(n * 13 + set.size * 7) % chars.length];
+                const c4 = chars[(n * 17 + set.size * 2) % chars.length];
+                const c5 = chars[(n * 19 + set.size * 6) % chars.length];
+                const c6 = chars[(n * 23 + set.size * 4) % chars.length];
+                const suffix = String(1000 + set.size).slice(-3);
+                set.add(`CODEX-${c1}${c2}${c3}${c4}${c5}${c6}-${suffix}`);
+                n++;
+            }
+            return set;
+        }
+
+        const PAID_CODES = buildThousandPaidCodesSet();
+
+        // =========================================================================
+        // 2. إدارة حالة التفعيل، قيود النسخة المجانية، ولوحة المشرف
+        // =========================================================================
+        const STORAGE_UNLOCKED_KEY = "codex_cert_unlocked_v1";
+        const STORAGE_GIFT_SHOWN_PREFIX = "codex_free_gift_shown_";
+        const STORAGE_GUEST_USED_KEY = "codex_guest_certs_used_v1";
+        const STORAGE_ADMIN_LOGS_KEY = "codex_admin_activations_v1";
+        const MAX_GUEST_STUDENTS = 3;
+        const ADMIN_PASSCODE = "CODEX2026";
+
+        let authState = {
+            unlocked: false,
+            tier: null, // 'free_gift' | 'paid_50'
+            code: null
+        };
+        let adminAuthenticated = false;
+
+        function getGuestUsedCount() {
+            try {
+                const raw = parseInt(localStorage.getItem(STORAGE_GUEST_USED_KEY) || "0", 10);
+                return Number.isNaN(raw) || raw < 0 ? 0 : raw;
+            } catch {
+                return 0;
+            }
+        }
+
+        function incrementGuestUsedCount() {
+            try {
+                const next = getGuestUsedCount() + 1;
+                localStorage.setItem(STORAGE_GUEST_USED_KEY, String(next));
+            } catch {
+                // تجاهل خطأ التخزين المحلي إن وجد
+            }
+        }
+
+        function getActivationLogs() {
+            try {
+                const list = JSON.parse(localStorage.getItem(STORAGE_ADMIN_LOGS_KEY) || "[]");
+                return Array.isArray(list) ? list : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function recordActivationLog(code, tier) {
+            try {
+                const logs = getActivationLogs();
+                logs.unshift({
+                    code,
+                    tier: tier === 'free_gift' ? 'كود مجاني' : 'كود مدفوع (50 ج)',
+                    time: new Date().toLocaleString('ar-EG')
+                });
+                localStorage.setItem(STORAGE_ADMIN_LOGS_KEY, JSON.stringify(logs.slice(0, 100)));
+            } catch {
+                // تجاهل خطأ التخزين المحلي إن وجد
+            }
+        }
+
+        function verifyCode(rawCode) {
+            const code = (rawCode || "").trim().toUpperCase();
+            if (!code) return null;
+            if (FREE_CODES.has(code)) {
+                return { unlocked: true, tier: "free_gift", code };
+            }
+            if (PAID_CODES.has(code)) {
+                return { unlocked: true, tier: "paid_50", code };
+            }
+            return null;
+        }
+
+        function openCodeModal() {
+            const errEl = document.getElementById("activationErrorMsg");
+            if (errEl) errEl.classList.add("hidden");
+            const inputEl = document.getElementById("activationCodeInput");
+            if (inputEl) {
+                inputEl.value = "";
+                setTimeout(() => inputEl.focus(), 60);
+            }
+            document.getElementById("codeActivationModal").classList.remove("hidden");
+        }
+
+        function closeCodeModal() {
+            document.getElementById("codeActivationModal").classList.add("hidden");
+        }
+
+        function closeFreeGiftModal() {
+            document.getElementById("freeGiftModal").classList.add("hidden");
+        }
+
+        function submitActivationCode() {
+            const inputEl = document.getElementById("activationCodeInput");
+            const errEl = document.getElementById("activationErrorMsg");
+            const result = verifyCode(inputEl.value);
+
+            if (!result) {
+                errEl.textContent = "الكود غير صحيح. تأكد من كتابة الكود بشكل سليم أو تواصل واتساب (01202060125) للحصول على كود الـ 50 ج.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            authState = result;
+            try {
+                localStorage.setItem(STORAGE_UNLOCKED_KEY, JSON.stringify(authState));
+            } catch {
+                // تجاهل خطأ التخزين المحلي إن وجد
+            }
+
+            recordActivationLog(result.code, result.tier);
+            closeCodeModal();
+            applyAuthUI();
+            setSubject(currentKey);
+            renderStudentsUI();
+
+            if (result.tier === "free_gift") {
+                const giftFlagKey = STORAGE_GIFT_SHOWN_PREFIX + result.code;
+                let alreadyShown = false;
+                try {
+                    alreadyShown = localStorage.getItem(giftFlagKey) === "1";
+                    if (!alreadyShown) {
+                        localStorage.setItem(giftFlagKey, "1");
+                    }
+                } catch {
+                    alreadyShown = false;
+                }
+
+                if (!alreadyShown) {
+                    document.getElementById("freeGiftModal").classList.remove("hidden");
+                } else {
+                    notify("تم تفعيل الكود وفتح جميع المميزات");
+                }
+            } else {
+                notify("تم تفعيل اشتراك الـ 50 ج مدى الحياة وفتح جميع المميزات");
+            }
+
+            if (adminAuthenticated) {
+                renderAdminDashboard();
+            }
+        }
+
+        function applyAuthUI() {
+            const badge = document.getElementById("planStatusBadge");
+            const topTierTag = document.getElementById("topTierTag");
+            const gradeLockBadge = document.getElementById("gradeLockBadge");
+            const customFieldsLockBadge = document.getElementById("customFieldsLockBadge");
+            const langLockHint = document.getElementById("langLockHint");
+
+            const schoolInput = document.getElementById("schoolInput");
+            const reasonInput = document.getElementById("reasonInput");
+            const teacherInput = document.getElementById("teacherInput");
+            const dateInput = document.getElementById("dateInput");
+            const toggleGrade = document.getElementById("toggleGradeCheck");
+            const toggleRanks = document.getElementById("toggleRanksCheck");
+
+            if (authState.unlocked) {
+                const label = authState.tier === "free_gift"
+                    ? "مفعّل مجاناً (كود هدية)"
+                    : "مفعّل مدى الحياة (اشتراك 50 ج)";
+                badge.textContent = label;
+                badge.className = "text-[10px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+
+                if (topTierTag) {
+                    topTierTag.textContent = label;
+                    topTierTag.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300";
+                }
+
+                gradeLockBadge.textContent = "مفتوح ✓";
+                gradeLockBadge.className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold";
+
+                customFieldsLockBadge.textContent = "مفتوح ✓";
+                customFieldsLockBadge.className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold";
+
+                langLockHint.textContent = "جميع المواد مفتوحة ✓";
+                langLockHint.className = "text-[10px] text-emerald-400 font-bold";
+
+                [schoolInput, reasonInput, teacherInput, dateInput].forEach(el => {
+                    el.readOnly = false;
+                    el.classList.remove("opacity-60", "cursor-not-allowed");
+                });
+            } else {
+                const rem = Math.max(0, MAX_GUEST_STUDENTS - getGuestUsedCount());
+                const freeLabel = `الوضع المجاني (متبقي ${rem} من ${MAX_GUEST_STUDENTS} شهادات فقط)`;
+                badge.textContent = freeLabel;
+                badge.className = "text-[10px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40";
+
+                if (topTierTag) {
+                    topTierTag.textContent = "الوضع المجاني (3 شهادات فقط)";
+                    topTierTag.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300";
+                }
+
+                gradeLockBadge.textContent = "🔒 بالكود";
+                gradeLockBadge.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold";
+
+                customFieldsLockBadge.textContent = "🔒 التعديل بالكود";
+                customFieldsLockBadge.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold";
+
+                langLockHint.textContent = "🔒 أغلب المواد بالكود";
+                langLockHint.className = "text-[10px] text-amber-400 font-bold";
+
+                toggleGrade.checked = false;
+                toggleRanks.checked = false;
+                document.getElementById("gradeFieldsWrap").classList.add("hidden");
+                document.getElementById("gradeCircleBadge").classList.add("hidden");
+                document.getElementById("rankBadgeBox").classList.add("hidden");
+
+                [schoolInput, reasonInput, teacherInput, dateInput].forEach(el => {
+                    el.readOnly = true;
+                    el.classList.add("opacity-60", "cursor-not-allowed");
+                });
+
+                if (currentKey !== "arabic") {
+                    currentKey = "arabic";
+                }
+            }
+
+            document.querySelectorAll(".subj-card").forEach(btn => {
+                const bKey = btn.dataset.key;
+                const lockBadge = btn.querySelector(".subj-lock");
+                if (bKey === "arabic") return;
+                if (lockBadge) {
+                    lockBadge.textContent = authState.unlocked ? "✓" : "🔒";
+                    lockBadge.className = authState.unlocked
+                        ? "subj-lock text-[11px] text-emerald-400"
+                        : "subj-lock text-[11px]";
+                }
+            });
+        }
+
+        // =========================================================================
+        // دوال لوحة المشرف (CODEX2026)
+        // =========================================================================
+        function openAdminModal() {
+            const errEl = document.getElementById("adminPassError");
+            if (errEl) errEl.classList.add("hidden");
+            document.getElementById("adminPanelModal").classList.remove("hidden");
+
+            if (adminAuthenticated) {
+                document.getElementById("adminAuthBox").classList.add("hidden");
+                document.getElementById("adminDashboardBox").classList.remove("hidden");
+                renderAdminDashboard();
+            } else {
+                document.getElementById("adminAuthBox").classList.remove("hidden");
+                document.getElementById("adminDashboardBox").classList.add("hidden");
+                const passInput = document.getElementById("adminPassInput");
+                passInput.value = "";
+                setTimeout(() => passInput.focus(), 60);
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById("adminPanelModal").classList.add("hidden");
+        }
+
+        function verifyAdminPass() {
+            const passVal = (document.getElementById("adminPassInput").value || "").trim();
+            const errEl = document.getElementById("adminPassError");
+            if (passVal !== ADMIN_PASSCODE) {
+                errEl.textContent = "كلمة مرور المشرف غير صحيحة.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+            adminAuthenticated = true;
+            errEl.classList.add("hidden");
+            document.getElementById("adminAuthBox").classList.add("hidden");
+            document.getElementById("adminDashboardBox").classList.remove("hidden");
+            renderAdminDashboard();
+        }
+
+        function renderAdminDashboard() {
+            const logs = getActivationLogs();
+            document.getElementById("adminFreeTotal").textContent = String(FREE_CODES.size);
+            document.getElementById("adminPaidTotal").textContent = String(PAID_CODES.size);
+            document.getElementById("adminLogsTotal").textContent = String(logs.length);
+
+            const sessionInfo = document.getElementById("adminCurrentSessionInfo");
+            if (authState.unlocked) {
+                sessionInfo.textContent = `الحالة الحالية: مفعّل بالكود (${authState.code})`;
+            } else {
+                sessionInfo.textContent = `الحالة الحالية: وضع مجاني (مستخدم ${getGuestUsedCount()} من ${MAX_GUEST_STUDENTS})`;
+            }
+
+            const tbody = document.getElementById("adminActivationsRows");
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-4 px-3 text-center text-slate-500">لا توجد عمليات تفعيل مسجلة على هذا المتصفح بعد</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = logs.map(item => `
+                <tr>
+                    <td class="py-2 px-3 font-mono text-cyan-300">${item.code}</td>
+                    <td class="py-2 px-3 text-slate-200">${item.tier}</td>
+                    <td class="py-2 px-3 text-slate-400">${item.time}</td>
+                </tr>
+            `).join("");
+        }
+
+        function exportAdminLogsCSV() {
+            const logs = getActivationLogs();
+            const rows = [["الكود", "النوع", "وقت التفعيل"], ...logs.map(l => [l.code, l.tier, l.time])];
+            const csvContent = "\uFEFF" + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "CODEX_Activations_Log.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+            notify("تم تصدير سجل التفعيلات CSV");
+        }
+
+        function resetGuestCounterAdmin() {
+            try {
+                localStorage.setItem(STORAGE_GUEST_USED_KEY, "0");
+            } catch {
+                // تجاهل خطأ التخزين المحلي إن وجد
+            }
+            applyAuthUI();
+            renderStudentsUI();
+            renderAdminDashboard();
+            notify("تم تصفير عداد الـ 3 شهادات المجانية");
+        }
+
+        function lockCurrentSessionAdmin() {
+            authState = { unlocked: false, tier: null, code: null };
+            try {
+                localStorage.removeItem(STORAGE_UNLOCKED_KEY);
+            } catch {
+                // تجاهل خطأ التخزين المحلي إن وجد
+            }
+            currentKey = "arabic";
+            setSubject("arabic");
+            applyAuthUI();
+            renderStudentsUI();
+            renderAdminDashboard();
+            notify("تم قفل الجلسة والعودة للوضع المجاني");
+        }
+
+        // =========================================================================
+        // 3. إعدادات المواد الدراسية والشهادة وتصدير PDF
+        // =========================================================================
         const SUBJECTS = {
             arabic: {
                 isEn: false,
@@ -496,7 +1531,6 @@
             }
         };
 
-        // حالة التطبيق (فارغة من الطلاب في البداية لكي يضيفهم المدرس بنفسه)
         let currentKey = 'arabic';
         let studentsList = [];
         let activeIdx = -1;
@@ -508,28 +1542,44 @@
             clearTimeout(window._notifyTimer);
             window._notifyTimer = setTimeout(() => {
                 box.classList.add('opacity-0', 'translate-y-4');
-            }, 2200);
+            }, 2400);
         }
 
         function setSubject(key) {
             const cfg = SUBJECTS[key];
             if (!cfg) return;
+
+            if (key !== 'arabic' && !authState.unlocked) {
+                notify('اختيار باقي المواد واللغة الإنجليزية متاح لأصحاب الأكواد فقط — ادفع 50 ج وخذ كودك مدى الحياة');
+                openCodeModal();
+                return;
+            }
+
             currentKey = key;
 
-            // تحديث حالة أزرار المواد
             document.querySelectorAll('.subj-card').forEach(btn => {
-                const active = btn.dataset.key === key;
-                btn.className = active
-                    ? 'subj-card ' + (btn.classList.contains('col-span-2') ? 'col-span-2 ' : '') + 'text-right px-3 py-2 rounded-xl text-xs font-bold border border-cyan-500 bg-cyan-500/15 text-cyan-200 transition cursor-pointer'
-                    : 'subj-card ' + (btn.classList.contains('col-span-2') ? 'col-span-2 ' : '') + 'text-right px-3 py-2 rounded-xl text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 transition cursor-pointer';
+                const bKey = btn.dataset.key;
+                const active = bKey === key;
+                const isWide = btn.classList.contains('sm:col-span-2');
+                const lockBadge = btn.querySelector('.subj-lock');
+                if (bKey !== 'arabic' && lockBadge) {
+                    lockBadge.textContent = authState.unlocked ? '✓' : '🔒';
+                    lockBadge.className = authState.unlocked
+                        ? 'subj-lock text-[11px] text-emerald-400'
+                        : 'subj-lock text-[11px]';
+                }
+
+                btn.className = 'subj-card ' + (isWide ? 'sm:col-span-2 ' : '') +
+                    'text-right px-3 py-2.5 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-between ' +
+                    (active
+                        ? 'border-cyan-500 bg-cyan-500/15 text-cyan-200'
+                        : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700');
             });
 
-            // تحديث اتجاه الشهادة (إنجليزي بالكامل من اليسار لليمين بدون أي عربي)
             const sheet = document.getElementById('certificateSheet');
             sheet.className = `cert-canvas ${cfg.tpl} p-6 flex flex-col justify-between select-none`;
             sheet.setAttribute('dir', cfg.isEn ? 'ltr' : 'rtl');
 
-            // تحديث النصوص الثابتة الخاصة بالمادة
             document.getElementById('certMainHeading').textContent = cfg.mainTitle;
             document.getElementById('certSubHeading').textContent = cfg.subTitle;
             document.getElementById('certSubjectPillText').textContent = cfg.pill;
@@ -537,7 +1587,6 @@
             document.getElementById('certTeacherRole').textContent = cfg.teacherRole;
             document.getElementById('certDateRole').textContent = cfg.dateRole;
 
-            // تعبئة قيم افتراضية مناسبة للغة الشهادة
             document.getElementById('schoolInput').value = cfg.defaultSchool;
             document.getElementById('reasonInput').value = cfg.defaultReason;
             document.getElementById('teacherInput').value = cfg.defaultTeacher;
@@ -549,10 +1598,15 @@
 
         function onGradeToggle() {
             const checked = document.getElementById('toggleGradeCheck').checked;
+            if (checked && !authState.unlocked) {
+                document.getElementById('toggleGradeCheck').checked = false;
+                notify('إضافة الدرجات متاحة لأصحاب الأكواد فقط — ادفع 50 ج وفعّل كودك مدى الحياة');
+                openCodeModal();
+                return;
+            }
             document.getElementById('gradeFieldsWrap').classList.toggle('hidden', !checked);
             document.getElementById('gradeCircleBadge').classList.toggle('hidden', !checked);
 
-            // إذا تم إلغاء الدرجة، يتم إيقاف المراكز تلقائياً لأن المراكز لا تعمل إلا بالدرجة
             if (!checked) {
                 document.getElementById('toggleRanksCheck').checked = false;
             }
@@ -564,6 +1618,12 @@
         function onRanksToggle() {
             const gradeChecked = document.getElementById('toggleGradeCheck').checked;
             const ranksChecked = document.getElementById('toggleRanksCheck').checked;
+            if (ranksChecked && !authState.unlocked) {
+                document.getElementById('toggleRanksCheck').checked = false;
+                notify('حساب المراكز تلقائياً متاح لأصحاب الأكواد فقط');
+                openCodeModal();
+                return;
+            }
             if (!gradeChecked && ranksChecked) {
                 document.getElementById('toggleRanksCheck').checked = false;
                 return;
@@ -576,11 +1636,10 @@
         function updateRankVisibility() {
             const gradeChecked = document.getElementById('toggleGradeCheck').checked;
             const ranksChecked = document.getElementById('toggleRanksCheck').checked;
-            const showRank = gradeChecked && ranksChecked && studentsList.length > 0;
+            const showRank = authState.unlocked && gradeChecked && ranksChecked && studentsList.length > 0;
             document.getElementById('rankBadgeBox').classList.toggle('hidden', !showRank);
         }
 
-        // تحويل رقم الترتيب (1, 2, 3...) إلى اسم مركز عربي أو إنجليزي
         function formatRankLabel(rankNum, isEn) {
             if (isEn) {
                 if (rankNum === 1) return '1st Place';
@@ -603,12 +1662,10 @@
             return arOrdinals[rankNum] || `المركز رقم ${rankNum}`;
         }
 
-        // حساب مراكز الطلاب بناءً على درجاتهم (مع إعطاء نفس المركز للمتساوين في الدرجة)
         function computeStudentRanks() {
             const ranksMap = new Map();
             if (studentsList.length === 0) return ranksMap;
 
-            // تحويل الدرجات إلى أرقام (مع دعم الأرقام العربية والهندية)
             const parseScore = (val) => {
                 const normalized = String(val || '0')
                     .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
@@ -645,8 +1702,19 @@
             const name = input.value.trim();
             if (!name) return;
 
+            const guestUsed = getGuestUsedCount();
+            if (!authState.unlocked && (studentsList.length >= MAX_GUEST_STUDENTS || guestUsed >= MAX_GUEST_STUDENTS)) {
+                notify('انتهى حد الـ 3 شهادات المجانية! ادفع 50 ج وفعّل كودك للدخول طول عمرك');
+                openCodeModal();
+                return;
+            }
+
             const earned = document.getElementById('studentEarnedInput').value || '50';
             studentsList.push({ name, earned });
+            if (!authState.unlocked) {
+                incrementGuestUsedCount();
+                applyAuthUI();
+            }
             activeIdx = studentsList.length - 1;
             input.value = '';
             renderStudentsUI();
@@ -684,7 +1752,14 @@
         function renderStudentsUI() {
             const listEl = document.getElementById('studentsVerticalList');
             const counterEl = document.getElementById('studentCounter');
-            counterEl.textContent = `${studentsList.length} ${studentsList.length === 1 ? 'طالب' : 'طلاب'}`;
+
+            if (authState.unlocked) {
+                counterEl.textContent = `${studentsList.length} ${studentsList.length === 1 ? 'طالب' : 'طلاب'} (بلا حدود)`;
+            } else {
+                const used = getGuestUsedCount();
+                const rem = Math.max(0, MAX_GUEST_STUDENTS - used);
+                counterEl.textContent = `${studentsList.length} / ${MAX_GUEST_STUDENTS} طلاب (متبقي ${rem})`;
+            }
 
             listEl.innerHTML = '';
             if (studentsList.length === 0) {
@@ -693,7 +1768,7 @@
                 return;
             }
 
-            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const showGrade = authState.unlocked && document.getElementById('toggleGradeCheck').checked;
             const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked;
             const maxScore = document.getElementById('studentMaxInput').value || '50';
             const ranksMap = showRanks ? computeStudentRanks() : null;
@@ -733,7 +1808,7 @@
         }
 
         function syncCertificate() {
-            const cfg = SUBJECTS[currentKey];
+            const cfg = SUBJECTS[currentKey] || SUBJECTS.arabic;
             const activeSt = (activeIdx >= 0 && studentsList[activeIdx]) ? studentsList[activeIdx] : null;
             const displayName = activeSt ? activeSt.name : (cfg.isEn ? 'Student Name' : 'اسم الطالب');
 
@@ -750,8 +1825,7 @@
             document.getElementById('circleEarnedVal').textContent = earned;
             document.getElementById('circleMaxVal').textContent = maxVal;
 
-            // تحديث شارة المركز على الشهادة
-            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const showGrade = authState.unlocked && document.getElementById('toggleGradeCheck').checked;
             const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked && activeIdx >= 0;
             updateRankVisibility();
             if (showRanks) {
@@ -776,21 +1850,42 @@
             stage.style.height = `${Math.ceil(baseH * ratio)}px`;
         }
 
-        async function buildAndSavePDF(nameText, earnedText) {
-            const sheet = document.getElementById('certificateSheet');
-            const prevTransform = sheet.style.transform;
-            const prevHeight = document.getElementById('previewStage').style.height;
+        function openPdfModeModal() {
+            if (studentsList.length === 0) {
+                notify('أضف اسم طالب واحد على الأقل أولاً');
+                return;
+            }
+            document.getElementById('pdfModeModal').classList.remove('hidden');
+        }
 
-            // تثبيت الحجم 1:1 أثناء الالتقاط لضمان ثبات الأبعاد ومنع التعليق
+        function closePdfModeModal() {
+            document.getElementById('pdfModeModal').classList.add('hidden');
+        }
+
+        async function confirmExportMode(mode) {
+            closePdfModeModal();
+            if (mode === 'merged') {
+                await exportMergedPDF();
+            } else {
+                await exportAllPDFs();
+            }
+        }
+
+        async function captureCertificateImage(nameText, earnedText, studentIndex = -1) {
+            const sheet = document.getElementById('certificateSheet');
+            const stage = document.getElementById('previewStage');
+            const prevTransform = sheet.style.transform;
+            const prevHeight = stage.style.height;
+
             sheet.style.transform = 'scale(1)';
             document.getElementById('certStudentName').textContent = nameText;
             document.getElementById('circleEarnedVal').textContent = earnedText;
 
-            const cfg = SUBJECTS[currentKey];
-            const showGrade = document.getElementById('toggleGradeCheck').checked;
+            const cfg = SUBJECTS[currentKey] || SUBJECTS.arabic;
+            const showGrade = authState.unlocked && document.getElementById('toggleGradeCheck').checked;
             const showRanks = showGrade && document.getElementById('toggleRanksCheck').checked;
             if (showRanks) {
-                const idx = studentsList.findIndex(s => s.name === nameText);
+                const idx = studentIndex >= 0 ? studentIndex : studentsList.findIndex(s => s.name === nameText);
                 const ranksMap = computeStudentRanks();
                 const rankNum = idx >= 0 ? (ranksMap.get(idx) || 1) : 1;
                 document.getElementById('rankBadgeText').textContent = formatRankLabel(rankNum, cfg.isEn);
@@ -806,9 +1901,13 @@
             });
 
             sheet.style.transform = prevTransform;
-            document.getElementById('previewStage').style.height = prevHeight;
+            stage.style.height = prevHeight;
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            return canvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        async function buildAndSavePDF(nameText, earnedText, studentIndex = -1) {
+            const imgData = await captureCertificateImage(nameText, earnedText, studentIndex);
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
             doc.addImage(imgData, 'JPEG', 0, 0, 297, 210);
@@ -825,7 +1924,7 @@
                     ? studentsList[activeIdx]
                     : { name: document.getElementById('certStudentName').textContent, earned: document.getElementById('studentEarnedInput').value || '50' };
                 notify(`جاري تحميل PDF: ${st.name}`);
-                await buildAndSavePDF(st.name, st.earned);
+                await buildAndSavePDF(st.name, st.earned, activeIdx);
                 notify('تم تحميل ملف PDF بنجاح');
             } catch (e) {
                 notify('تعذر إنشاء ملف PDF');
@@ -840,12 +1939,36 @@
             await exportSinglePDF();
         }
 
-        async function exportAllPDFs() {
-            if (studentsList.length === 0) {
-                notify('أضف اسم طالب واحد على الأقل أولاً');
-                return;
-            }
+        async function exportMergedPDF() {
+            const bar = document.getElementById('exportStatusBar');
+            const btnAll = document.getElementById('btnExportAll');
+            bar.classList.remove('hidden');
+            btnAll.disabled = true;
 
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+                for (let i = 0; i < studentsList.length; i++) {
+                    const st = studentsList[i];
+                    bar.textContent = `جاري إضافة شهادة (${i + 1} من ${studentsList.length}) إلى ملف PDF الموحد: ${st.name}`;
+                    if (i > 0) doc.addPage('a4', 'landscape');
+                    const imgData = await captureCertificateImage(st.name, st.earned, i);
+                    doc.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+                }
+
+                doc.save(`CODEX_All_Certificates_${studentsList.length}.pdf`);
+                notify(`تم تحميل ملف PDF موحد يحتوي على ${studentsList.length} شهادات`);
+            } catch (e) {
+                notify('حدث خطأ أثناء إنشاء ملف PDF الموحد');
+            } finally {
+                bar.classList.add('hidden');
+                btnAll.disabled = false;
+                syncCertificate();
+            }
+        }
+
+        async function exportAllPDFs() {
             const bar = document.getElementById('exportStatusBar');
             const btnAll = document.getElementById('btnExportAll');
             bar.classList.remove('hidden');
@@ -854,8 +1977,8 @@
             try {
                 for (let i = 0; i < studentsList.length; i++) {
                     const st = studentsList[i];
-                    bar.textContent = `جاري تصدير ملف PDF (${i + 1} من ${studentsList.length}): ${st.name}`;
-                    await buildAndSavePDF(st.name, st.earned);
+                    bar.textContent = `جاري تصدير ملف PDF مستقل (${i + 1} من ${studentsList.length}): ${st.name}`;
+                    await buildAndSavePDF(st.name, st.earned, i);
                     await new Promise(r => setTimeout(r, 300));
                 }
                 notify(`تم تصدير ${studentsList.length} ملفات PDF مستقلة`);
@@ -868,10 +1991,38 @@
             }
         }
 
-        window.addEventListener('resize', scaleStage);
-        window.addEventListener('orientationchange', () => setTimeout(scaleStage, 150));
+        // استعادة حالة التفعيل عند فتح الموقع وتحديث القياس تلقائياً لأي جهاز أو اتجاه شاشة
+        window.addEventListener('resize', () => {
+            scaleStage();
+            clearTimeout(window._resizeTimer);
+            window._resizeTimer = setTimeout(scaleStage, 120);
+        });
+        window.addEventListener('orientationchange', () => {
+            scaleStage();
+            setTimeout(scaleStage, 150);
+            setTimeout(scaleStage, 400);
+        });
+        if (typeof ResizeObserver !== 'undefined') {
+            window.addEventListener('DOMContentLoaded', () => {
+                const stage = document.getElementById('previewStage');
+                if (stage) {
+                    const ro = new ResizeObserver(() => scaleStage());
+                    ro.observe(stage);
+                }
+            });
+        }
         window.onload = function() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_UNLOCKED_KEY) || "null");
+                if (saved && saved.unlocked && verifyCode(saved.code)) {
+                    authState = saved;
+                }
+            } catch {
+                authState = { unlocked: false, tier: null, code: null };
+            }
+
             setSubject('arabic');
+            applyAuthUI();
             renderStudentsUI();
             scaleStage();
             setTimeout(scaleStage, 120);
